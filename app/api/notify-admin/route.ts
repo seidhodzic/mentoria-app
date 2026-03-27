@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { env } from '@/lib/env';
-
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-
-  const payload = {
-    to: env.adminNotificationEmail || 'configure-admin-email@example.com',
-    subject: 'New Mentoria registration',
-    message: `New registration: ${body.fullName || 'Unknown name'} <${body.email}> as ${body.role}.`
-  };
-
-  // Replace this stub with Resend, SendGrid, Postmark, or Supabase Edge Function logic.
-  console.log('ADMIN_NOTIFICATION', payload);
-
-  return NextResponse.json({ ok: true, payload });
+export async function POST(req: NextRequest) {
+  try {
+    const { email, fullName, role, profile_type } = await req.json();
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+    if (!adminEmail) { console.warn('ADMIN_NOTIFICATION_EMAIL not set'); return NextResponse.json({ ok:true, skipped:true }); }
+    console.log(`New registration: ${fullName} (${email}) — ${role} / ${profile_type}`);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('notify-admin error:', err);
+    return NextResponse.json({ ok: false }, { status: 200 });
+  }
 }

@@ -1,9 +1,5 @@
+import { Suspense } from 'react';
 import AuthForm from '@/components/AuthForm';
-
 export default function LoginPage() {
-  return (
-    <section className="auth-shell">
-      <AuthForm mode="login" />
-    </section>
-  );
+  return <div className="auth-shell"><Suspense><AuthForm mode="login" /></Suspense></div>;
 }

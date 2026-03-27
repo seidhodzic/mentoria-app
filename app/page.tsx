@@ -3,51 +3,26 @@ import Link from 'next/link';
 export default function HomePage() {
   return (
     <>
-      <section className="hero">
-        <div className="container hero-grid">
-          <div>
-            <span className="badge">Athlete Career Management Platform</span>
-            <h1>Build careers beyond sport.</h1>
-            <p>
-              Mentoria is a subscription-based platform for athletes, mentors, and administrators to manage learning,
-              career planning, content, advisory, and long-term development in one secure digital workspace.
-            </p>
-            <div className="button-row">
-              <Link href="/register" className="button">Create Account</Link>
-              <Link href="/login" className="button button-secondary">Member Login</Link>
-            </div>
-          </div>
-          <div className="card">
-            <h3>Included in this MVP</h3>
-            <ul className="clean">
-              <li>Email/password registration with role selection</li>
-              <li>Supabase-ready user profiles and role-based access</li>
-              <li>Admin, mentor, and user dashboard scaffolds</li>
-              <li>Internal registration notification API route</li>
-              <li>Starter SQL schema for subscriptions and content</li>
-            </ul>
-          </div>
+      <header className="site-header">
+        <div className="container nav">
+          <Link href="/" className="brand">Mentoria</Link>
+          <nav>
+            <Link href="/login">Member Login</Link>
+            <Link href="/register" className="btn btn-primary btn-sm">Get Started</Link>
+          </nav>
         </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="cards">
-            <div className="card">
-              <h3>Admin Dashboard</h3>
-              <p>Manage users, mentor approvals, materials, quizzes, and subscription status.</p>
-            </div>
-            <div className="card">
-              <h3>Mentor Dashboard</h3>
-              <p>Review assigned users, publish resources, track progress, and manage sessions.</p>
-            </div>
-            <div className="card">
-              <h3>User Dashboard</h3>
-              <p>Access learning materials, quizzes, career plans, and subscription settings.</p>
-            </div>
-          </div>
+      </header>
+      <main style={{minHeight:'100vh',background:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:24,textAlign:'center',padding:'0 20px'}}>
+        <div style={{color:'var(--gold)',fontSize:'0.7rem',fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase'}}>Members Platform</div>
+        <h1 style={{color:'#fff',fontSize:'clamp(2.5rem,6vw,5rem)',lineHeight:0.95}}>Mentoria</h1>
+        <p style={{color:'rgba(255,255,255,0.55)',maxWidth:480,fontWeight:300,fontSize:'1rem'}}>
+          A premium advisory platform for sports, investment and education professionals.
+        </p>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap',justifyContent:'center'}}>
+          <Link href="/login" className="btn btn-primary">Sign In</Link>
+          <Link href="/register" className="btn btn-outline" style={{color:'#fff',borderColor:'rgba(255,255,255,0.3)'}}>Create Account</Link>
         </div>
-      </section>
+      </main>
     </>
   );
 }

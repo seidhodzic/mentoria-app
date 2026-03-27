@@ -4,12 +4,16 @@ import { getDashboardPath, normalizeRole } from '@/lib/role';
 
 export default async function DashboardRouterPage() {
   const supabase = createClient();
-  const { data } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!data.user) {
-    redirect('/login');
-  }
+  if (!user) redirect('/login');
 
-  const role = normalizeRole((data.user.user_metadata.role as string | undefined) ?? 'user');
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const role = normalizeRole(profile?.role ?? user.user_metadata?.role);
   redirect(getDashboardPath(role));
 }
