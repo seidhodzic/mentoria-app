@@ -1,0 +1,189 @@
+'use client';
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase-browser';
+import Link from 'next/link';
+
+type Course = {
+  id: string; title: string; description: string | null;
+  category: string | null; is_published: boolean;
+  created_at: string; lessons?: { count: number }[];
+};
+
+const ADMIN_NAV = [
+  { label: 'Overview', href: '/admin' },
+  { label: 'Users', href: '/admin/users' },
+  { label: 'Materials', href: '/admin/materials' },
+  { label: 'Courses', href: '/admin/courses' },
+  { label: 'Quizzes', href: '/admin/quizzes' },
+  { label: 'Subscriptions', href: '/admin/subscriptions' },
+];
+
+const CATEGORIES = ['general', 'sports', 'investment', 'education', 'legal', 'career', 'fifa-agent'];
+
+export default function AdminCoursesClient({ courses: initial, userId }: { courses: Course[]; userId: string }) {
+  const [courses, setCourses] = useState<Course[]>(initial);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('general');
+
+  function showMsg(type: 'success' | 'error', text: string) {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 4000);
+  }
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!title.trim()) return;
+    setSaving(true);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.from('courses').insert({
+        title: title.trim(), description: description.trim() || null,
+        category, is_published: false, created_by: userId,
+      }).select().single();
+      if (error) throw error;
+      setCourses(prev => [data, ...prev]);
+      setTitle(''); setDescription(''); setCategory('general');
+      setShowForm(false);
+      showMsg('success', `Course "${data.title}" created.`);
+    } catch (err) {
+      showMsg('error', err instanceof Error ? err.message : 'Failed to create course.');
+    } finally { setSaving(false); }
+  }
+
+  async function togglePublish(course: Course) {
+    setToggling(course.id);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.from('courses').update({ is_published: !course.is_published }).eq('id', course.id);
+      if (error) throw error;
+      setCourses(prev => prev.map(c => c.id === course.id ? { ...c, is_published: !c.is_published } : c));
+      showMsg('success', `Course ${!course.is_published ? 'published' : 'unpublished'}.`);
+    } catch { showMsg('error', 'Failed to update.'); }
+    finally { setToggling(null); }
+  }
+
+  async function handleDelete(course: Course) {
+    if (!confirm(`Delete "${course.title}"? All lessons will be removed.`)) return;
+    setDeleting(course.id);
+    try {
+      const supabase = createClient();
+      await supabase.from('courses').delete().eq('id', course.id);
+      setCourses(prev => prev.filter(c => c.id !== course.id));
+      showMsg('success', `"${course.title}" deleted.`);
+    } catch { showMsg('error', 'Delete failed.'); }
+    finally { setDeleting(null); }
+  }
+
+  return (
+    <div className="dash-layout">
+      <header className="dash-header">
+        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
+        <nav className="dash-nav">
+          {ADMIN_NAV.map(item => (
+            <Link key={item.href} href={item.href as any} className={item.href === '/admin/courses' ? 'active' : ''}>{item.label}</Link>
+          ))}
+        </nav>
+        <div className="dash-header-right">
+          <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+            {showForm ? '✕ Cancel' : '+ New Course'}
+          </button>
+        </div>
+      </header>
+
+      <div className="dash-content">
+        <div className="page-header">
+          <div className="eyebrow">Admin — Courses</div>
+          <h1>Course Builder</h1>
+          <p>Create and manage courses. Add lessons and publish when ready.</p>
+        </div>
+
+        {message && (
+          <div className={message.type === 'success' ? 'auth-success' : 'auth-error'} style={{ marginBottom: 16 }}>{message.text}</div>
+        )}
+
+        {showForm && (
+          <div className="card" style={{ marginBottom: 24 }}>
+            <h3 style={{ marginBottom: 20 }}>Create New Course</h3>
+            <form onSubmit={handleCreate}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label>Course Title *</label>
+                  <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. FIFA Agent Exam Preparation" required />
+                </div>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label>Category</label>
+                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c.split('-').map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <input value={description} onChange={e => setDescription(e.target.value)} placeholder="What will members learn in this course?" />
+              </div>
+              <button className="btn btn-primary" type="submit" disabled={saving}>
+                {saving ? 'Creating...' : 'Create Course'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', marginBottom: 24 }}>
+          <div className="stat-card"><div className="stat-label">Total Courses</div><div className="stat-value">{courses.length}</div></div>
+          <div className="stat-card"><div className="stat-label">Published</div><div className="stat-value">{courses.filter(c => c.is_published).length}</div></div>
+          <div className="stat-card"><div className="stat-label">Drafts</div><div className="stat-value">{courses.filter(c => !c.is_published).length}</div></div>
+        </div>
+
+        <div className="table-wrap">
+          {courses.length > 0 ? (
+            <table>
+              <thead>
+                <tr><th>Title</th><th>Category</th><th>Lessons</th><th>Status</th><th>Created</th><th>Actions</th></tr>
+              </thead>
+              <tbody>
+                {courses.map(c => (
+                  <tr key={c.id}>
+                    <td>
+                      <div style={{ fontWeight: 600 }}>{c.title}</div>
+                      {c.description && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{c.description}</div>}
+                    </td>
+                    <td><span className="badge badge-user">{c.category ?? 'general'}</span></td>
+                    <td style={{ color: 'var(--text-muted)' }}>{c.lessons?.[0]?.count ?? 0}</td>
+                    <td>
+                      <span className={`badge ${c.is_published ? 'badge-active' : 'badge-pending'}`}>
+                        {c.is_published ? 'Published' : 'Draft'}
+                      </span>
+                    </td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{new Date(c.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <Link href={`/admin/courses/${c.id}` as any} className="btn btn-outline btn-sm">Lessons</Link>
+                        <button onClick={() => togglePublish(c)} disabled={toggling === c.id} className={`btn btn-sm ${c.is_published ? 'btn-outline' : 'btn-teal'}`}>
+                          {toggling === c.id ? '...' : c.is_published ? 'Unpublish' : 'Publish'}
+                        </button>
+                        <button onClick={() => handleDelete(c)} disabled={deleting === c.id} className="btn btn-danger btn-sm">
+                          {deleting === c.id ? '...' : 'Delete'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="empty-state">
+              <h3>No courses yet</h3>
+              <p>Click "New Course" to create your first course.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
