@@ -1,14 +1,18 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
+import UserQuizzesClient from './UserQuizzesClient';
+
 export default async function UserQuizzesPage() {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
-  return (
-    <div style={{padding:40,fontFamily:'Saira,sans-serif',background:'#EFEFEF',minHeight:'100vh'}}>
-      <h2 style={{fontFamily:'Saira Condensed,sans-serif',textTransform:'uppercase',color:'#19353E',marginBottom:16}}>Quizzes</h2>
-      <p style={{color:'rgba(25,53,62,0.6)',marginBottom:24}}>Quiz system coming in Phase 4.</p>
-      <a href="/user" style={{color:'#F7BC15',fontWeight:700,textDecoration:'none'}}>← Back to Dashboard</a>
-    </div>
-  );
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) redirect('/login');
+
+  const { data: attempts } = await supabase
+    .from('quiz_attempts')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  return <UserQuizzesClient userId={session.user.id} attempts={attempts ?? []} />;
 }
