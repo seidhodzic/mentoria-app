@@ -1,6 +1,5 @@
-import Link from 'next/link';
-import SignOutButton from './SignOutButton';
 import AIAssistant from './AIAssistant';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 
 type NavItem = { label: string; href: string };
 type Stat = { label: string; value: string; sub?: string };
@@ -18,33 +17,12 @@ export default function DashboardShell({
 }: Props) {
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href as any}
-              className={activeNav === item.href ? 'active' : ''}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          {userName && (
-            <div className="dash-user-pill">
-              {userRole && (
-                <span className="role-badge" style={{
-                  background: userRole==='admin'?'var(--teal)':userRole==='mentor'?'var(--gold)':'rgba(25,53,62,0.15)',
-                  color: userRole==='mentor'?'var(--teal)':'var(--white)',
-                }}>
-                  {userRole}
-                </span>
-              )}
-              <span className="name">{userName}</span>
-            </div>
-          )}
-          <SignOutButton />
-        </div>
-      </header>
+      <DashboardHeader
+        navItems={navItems}
+        activeNav={activeNav}
+        userName={userName}
+        userRole={userRole}
+      />
 
       <div className="dash-content">
         <div className="page-header">

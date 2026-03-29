@@ -15,8 +15,8 @@ export type Material = {
   id: string;
   title: string;
   description: string | null;
-  visibility: 'all' | 'mentors' | 'users' | 'admins';
-  created_by: string | null;
+  visibility: 'public' | 'mentors' | 'users' | 'admins';
+  owner_id: string | null;
   created_at: string;
 };
 
@@ -24,7 +24,7 @@ export type Quiz = {
   id: string;
   title: string;
   description: string | null;
-  created_by: string | null;
+  owner_id: string | null;
   created_at: string;
 };
 

@@ -1,3 +1,4 @@
+import { requireUserForApi } from '@/lib/server/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   sendSessionConfirmationToMember,
@@ -8,6 +9,9 @@ import {
 } from '@/lib/emails';
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUserForApi();
+  if (auth.unauthorized) return auth.unauthorized;
+
   try {
     const body = await req.json();
     const { type } = body;

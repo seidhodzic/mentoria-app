@@ -1,11 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 import Link from 'next/link';
 
 type Course = {
   id: string; title: string; description: string | null;
-  category: string | null; is_published: boolean;
+  category: string | null; is_published: boolean | null;
   created_at: string; lessons?: { count: number }[];
 };
 
@@ -44,7 +45,7 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
       const supabase = createClient();
       const { data, error } = await supabase.from('courses').insert({
         title: title.trim(), description: description.trim() || null,
-        category, is_published: false, created_by: userId,
+        category, is_published: false, owner_id: userId,
       }).select().single();
       if (error) throw error;
       setCourses(prev => [data, ...prev]);
@@ -60,10 +61,11 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
     setToggling(course.id);
     try {
       const supabase = createClient();
-      const { error } = await supabase.from('courses').update({ is_published: !course.is_published }).eq('id', course.id);
+      const next = !(course.is_published ?? false);
+      const { error } = await supabase.from('courses').update({ is_published: next }).eq('id', course.id);
       if (error) throw error;
-      setCourses(prev => prev.map(c => c.id === course.id ? { ...c, is_published: !c.is_published } : c));
-      showMsg('success', `Course ${!course.is_published ? 'published' : 'unpublished'}.`);
+      setCourses(prev => prev.map(c => (c.id === course.id ? { ...c, is_published: next } : c)));
+      showMsg('success', `Course ${next ? 'published' : 'unpublished'}.`);
     } catch { showMsg('error', 'Failed to update.'); }
     finally { setToggling(null); }
   }
@@ -82,19 +84,11 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
 
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {ADMIN_NAV.map(item => (
-            <Link key={item.href} href={item.href as any} className={item.href === '/admin/courses' ? 'active' : ''}>{item.label}</Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
-            {showForm ? '✕ Cancel' : '+ New Course'}
-          </button>
-        </div>
-      </header>
+      <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/courses">
+        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+          {showForm ? '✕ Cancel' : '+ New Course'}
+        </button>
+      </DashboardHeader>
 
       <div className="dash-content">
         <div className="page-header">
@@ -136,8 +130,8 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
 
         <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', marginBottom: 24 }}>
           <div className="stat-card"><div className="stat-label">Total Courses</div><div className="stat-value">{courses.length}</div></div>
-          <div className="stat-card"><div className="stat-label">Published</div><div className="stat-value">{courses.filter(c => c.is_published).length}</div></div>
-          <div className="stat-card"><div className="stat-label">Drafts</div><div className="stat-value">{courses.filter(c => !c.is_published).length}</div></div>
+          <div className="stat-card"><div className="stat-label">Published</div><div className="stat-value">{courses.filter(c => c.is_published ?? false).length}</div></div>
+          <div className="stat-card"><div className="stat-label">Drafts</div><div className="stat-value">{courses.filter(c => !(c.is_published ?? false)).length}</div></div>
         </div>
 
         <div className="table-wrap">
@@ -151,21 +145,21 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
                   <tr key={c.id}>
                     <td>
                       <div style={{ fontWeight: 600 }}>{c.title}</div>
-                      {c.description && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{c.description}</div>}
+                      {c.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8, color: 'var(--text-muted)', marginTop: 2 }}>{c.description}</div>}
                     </td>
                     <td><span className="badge badge-user">{c.category ?? 'general'}</span></td>
                     <td style={{ color: 'var(--text-muted)' }}>{c.lessons?.[0]?.count ?? 0}</td>
                     <td>
-                      <span className={`badge ${c.is_published ? 'badge-active' : 'badge-pending'}`}>
-                        {c.is_published ? 'Published' : 'Draft'}
+                      <span className={`badge ${c.is_published ?? false ? 'badge-active' : 'badge-pending'}`}>
+                        {c.is_published ?? false ? 'Published' : 'Draft'}
                       </span>
                     </td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{new Date(c.created_at).toLocaleDateString()}</td>
+                    <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(c.created_at).toLocaleDateString()}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <Link href={`/admin/courses/${c.id}` as any} className="btn btn-outline btn-sm">Lessons</Link>
-                        <button onClick={() => togglePublish(c)} disabled={toggling === c.id} className={`btn btn-sm ${c.is_published ? 'btn-outline' : 'btn-teal'}`}>
-                          {toggling === c.id ? '...' : c.is_published ? 'Unpublish' : 'Publish'}
+                        <button onClick={() => togglePublish(c)} disabled={toggling === c.id} className={`btn btn-sm ${c.is_published ?? false ? 'btn-outline' : 'btn-teal'}`}>
+                          {toggling === c.id ? '...' : c.is_published ?? false ? 'Unpublish' : 'Publish'}
                         </button>
                         <button onClick={() => handleDelete(c)} disabled={deleting === c.id} className="btn btn-danger btn-sm">
                           {deleting === c.id ? '...' : 'Delete'}

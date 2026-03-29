@@ -1,19 +1,21 @@
 'use client';
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase-browser';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 import Link from 'next/link';
 
 type Material = {
   id: string; title: string; description: string | null;
   file_url: string | null; file_name: string | null;
   file_size: number | null; category: string | null;
-  is_premium: boolean; created_at: string;
+  is_premium: boolean | null; created_at: string;
 };
 
 const ADMIN_NAV = [
   { label: 'Overview', href: '/admin' },
   { label: 'Users', href: '/admin/users' },
   { label: 'Materials', href: '/admin/materials' },
+  { label: 'Courses', href: '/admin/courses' },
   { label: 'Quizzes', href: '/admin/quizzes' },
   { label: 'Subscriptions', href: '/admin/subscriptions' },
 ];
@@ -57,7 +59,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
         file_size: file.size,
         category,
         is_premium: isPremium,
-        created_by: userId,
+        owner_id: userId,
       }).select().single();
       if (dbError) throw dbError;
       setMaterials(prev => [mat, ...prev]);
@@ -100,19 +102,11 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
 
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {ADMIN_NAV.map(item => (
-            <Link key={item.href} href={item.href as any} className={item.href === '/admin/materials' ? 'active' : ''}>{item.label}</Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
-            {showForm ? '✕ Cancel' : '+ Upload Material'}
-          </button>
-        </div>
-      </header>
+      <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/materials">
+        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+          {showForm ? '✕ Cancel' : '+ Upload Material'}
+        </button>
+      </DashboardHeader>
 
       <div className="dash-content">
         <div className="page-header">
@@ -153,7 +147,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
                 <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.mp4" required />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 20 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontSize: '0.85rem', fontWeight: 400, color: 'var(--teal)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontFamily: "'Saira', sans-serif", fontSize: '0.85rem', fontWeight: 400, color: 'var(--teal)' }}>
                   <input type="checkbox" checked={isPremium} onChange={e => setIsPremium(e.target.checked)} style={{ width: 'auto' }} />
                   Premium (subscribers only)
                 </label>
@@ -168,8 +162,8 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
         {/* Stats */}
         <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', marginBottom: 24 }}>
           <div className="stat-card"><div className="stat-label">Total Materials</div><div className="stat-value">{materials.length}</div></div>
-          <div className="stat-card"><div className="stat-label">Premium</div><div className="stat-value">{materials.filter(m => m.is_premium).length}</div></div>
-          <div className="stat-card"><div className="stat-label">Free</div><div className="stat-value">{materials.filter(m => !m.is_premium).length}</div></div>
+          <div className="stat-card"><div className="stat-label">Premium</div><div className="stat-value">{materials.filter(m => m.is_premium ?? false).length}</div></div>
+          <div className="stat-card"><div className="stat-label">Free</div><div className="stat-value">{materials.filter(m => !(m.is_premium ?? false)).length}</div></div>
         </div>
 
         {/* Table */}
@@ -184,12 +178,12 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
                   <tr key={m.id}>
                     <td>
                       <div style={{ fontWeight: 600 }}>{m.title}</div>
-                      {m.description && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{m.description}</div>}
+                      {m.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8, color: 'var(--text-muted)', marginTop: 2 }}>{m.description}</div>}
                     </td>
                     <td><span className="badge badge-user">{m.category ?? 'general'}</span></td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{formatSize(m.file_size)}</td>
-                    <td><span className={`badge ${m.is_premium ? 'badge-admin' : 'badge-active'}`}>{m.is_premium ? 'Premium' : 'Free'}</span></td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{new Date(m.created_at).toLocaleDateString()}</td>
+                    <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{formatSize(m.file_size)}</td>
+                    <td><span className={`badge ${m.is_premium ?? false ? 'badge-admin' : 'badge-active'}`}>{m.is_premium ?? false ? 'Premium' : 'Free'}</span></td>
+                    <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(m.created_at).toLocaleDateString()}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
                         {m.file_url && (

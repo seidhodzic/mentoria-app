@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { normalizeRole } from '@/lib/role';
 import DashboardShell from '@/components/DashboardShell';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 
 const ADMIN_NAV = [
   { label: 'Overview', href: '/admin' },
@@ -16,10 +17,7 @@ export default async function AdminPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  console.log('ADMIN PAGE - user:', user?.id, user?.email);
-
   if (!user) {
-    console.log('ADMIN PAGE - no user, redirecting to login');
     redirect('/login');
   }
 
@@ -29,18 +27,17 @@ export default async function AdminPage() {
     .eq('id', user.id)
     .single();
 
-  console.log('ADMIN PAGE - profile:', profile, 'error:', profileError);
+  throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
   if (normalizeRole(profile?.role) !== 'admin') {
-    console.log('ADMIN PAGE - not admin, role is:', profile?.role);
     redirect('/dashboard');
   }
 
   const [
-    { count: totalUsers },
-    { count: pendingUsers },
-    { count: totalMaterials },
-    { count: totalQuizzes },
+    { count: totalUsers, error: totalUsersError },
+    { count: pendingUsers, error: pendingUsersError },
+    { count: totalMaterials, error: totalMaterialsError },
+    { count: totalQuizzes, error: totalQuizzesError },
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -48,11 +45,18 @@ export default async function AdminPage() {
     supabase.from('quizzes').select('*', { count: 'exact', head: true }),
   ]);
 
-  const { data: recentUsers } = await supabase
+  throwIfSupabaseError(totalUsersError, 'profiles count');
+  throwIfSupabaseError(pendingUsersError, 'pending profiles count');
+  throwIfSupabaseError(totalMaterialsError, 'materials count');
+  throwIfSupabaseError(totalQuizzesError, 'quizzes count');
+
+  const { data: recentUsers, error: recentUsersError } = await supabase
     .from('profiles')
     .select('id, email, full_name, role, status, created_at')
     .order('created_at', { ascending: false })
     .limit(5);
+
+  throwIfSupabaseError(recentUsersError, 'recent users');
 
   return (
     <DashboardShell
@@ -137,7 +141,7 @@ export default async function AdminPage() {
                   <td>{u.email}</td>
                   <td><span className={`badge badge-${u.role}`}>{u.role}</span></td>
                   <td><span className={`badge badge-${u.status}`}>{u.status}</span></td>
-                  <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                  <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>
                     {new Date(u.created_at).toLocaleDateString()}
                   </td>
                 </tr>

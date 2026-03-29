@@ -1,12 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
+import { memberHasPremiumAccess } from '@/lib/member-entitlement';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: { headers: request.headers },
   });
 
-  const supabase = createServerClient(
+  // Cast: @supabase/ssr generic arity differs from SupabaseClient<Database> in this dependency set.
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -30,14 +35,30 @@ export async function middleware(request: NextRequest) {
         },
       },
     }
-  );
+  ) as unknown as SupabaseClient<Database>;
 
-  // This refreshes the session and writes updated cookies to response
-  const { data: { user } } = await supabase.auth.getUser();
+  // Use getUser() (not getSession()): validates the JWT with Supabase Auth on each request.
+  // Session refresh + cookie updates run as part of this flow via the cookie handlers above.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
   if (!user) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  /** Router hub: avoid RSC-only redirect loops / repeated fetches — send users straight to their home. */
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    const meta = user.user_metadata as { role?: string } | undefined;
+    const role = normalizeRole(profile?.role ?? meta?.role);
+    const dest = getDashboardPath(role);
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/mentor')) {
@@ -53,10 +74,38 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login?error=suspended', request.url));
     }
     if (pathname.startsWith('/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/user', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     if (pathname.startsWith('/mentor') && role !== 'mentor' && role !== 'admin') {
-      return NextResponse.redirect(new URL('/user', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
+
+  /** Member-only premium areas: paid subscription (`active`) or one-time active purchase; overview `/user` stays open. */
+  if (pathname.startsWith('/user')) {
+    const gated =
+      pathname.startsWith('/user/courses') ||
+      pathname.startsWith('/user/quizzes') ||
+      pathname.startsWith('/user/materials') ||
+      pathname.startsWith('/user/sessions');
+    if (gated) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, signup_access_type, status, is_active')
+        .eq('id', user.id)
+        .single();
+
+      const { data: subRows } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const latestSub = subRows?.[0]?.status ?? null;
+      if (!memberHasPremiumAccess(profile, latestSub)) {
+        return NextResponse.redirect(new URL('/user?locked=1', request.url));
+      }
     }
   }
 
@@ -64,5 +113,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/mentor/:path*', '/user/:path*'],
+  // Include bare `/dashboard` — some Next versions do not match `/dashboard/:path*` without a trailing segment.
+  matcher: ['/dashboard', '/dashboard/:path*', '/admin/:path*', '/mentor/:path*', '/user/:path*'],
 };

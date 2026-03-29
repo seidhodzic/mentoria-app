@@ -1,17 +1,27 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase-server';
+import AdminCoursesClient from '@/features/courses/components/AdminCoursesClient';
 import { normalizeRole } from '@/lib/role';
-import AdminCoursesClient from './AdminCoursesClient';
+import { requireUser } from '@/lib/server/auth';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
+import { redirect } from 'next/navigation';
 
 export default async function AdminCoursesPage() {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+  const { supabase, user } = await requireUser();
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
+
   if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
-  const { data: courses } = await supabase
+
+  const { data: courses, error: coursesError } = await supabase
     .from('courses')
     .select('*, lessons(count)')
     .order('created_at', { ascending: false });
-  return <AdminCoursesClient courses={courses ?? []} userId={session.user.id} />;
+
+  throwIfSupabaseError(coursesError, 'courses');
+
+  return <AdminCoursesClient courses={courses ?? []} userId={user.id} />;
 }

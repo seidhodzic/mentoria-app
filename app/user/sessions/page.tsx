@@ -1,45 +1,59 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase-server';
-import UserSessionsClient from './UserSessionsClient';
+import UserSessionsClient from '@/features/sessions/components/UserSessionsClient';
+import { requireUser } from '@/lib/server/auth';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 
 export default async function UserSessionsPage() {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
+  const { supabase, user } = await requireUser();
 
-  const { data: profile } = await supabase.from('profiles').select('full_name, email').eq('id', session.user.id).single();
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', user.id)
+    .single();
 
-  const { data: mySessions } = await supabase
+  throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
+
+  const { data: mySessions, error: mySessionsError } = await supabase
     .from('sessions')
     .select('*, profiles!sessions_mentor_id_fkey(full_name, email)')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .order('scheduled_at', { ascending: true });
 
-  const { data: groupSessions } = await supabase
+  throwIfSupabaseError(mySessionsError, 'sessions');
+
+  const { data: groupSessions, error: groupSessionsError } = await supabase
     .from('sessions')
     .select('*, profiles!sessions_mentor_id_fkey(full_name, email)')
     .eq('type', 'group')
     .eq('status', 'scheduled')
     .order('scheduled_at', { ascending: true });
 
-  const { data: myRequests } = await supabase
+  throwIfSupabaseError(groupSessionsError, 'group sessions');
+
+  const { data: myRequests, error: myRequestsError } = await supabase
     .from('session_requests')
     .select('*')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
-  const { data: mentors } = await supabase
+  throwIfSupabaseError(myRequestsError, 'session_requests');
+
+  const { data: mentors, error: mentorsError } = await supabase
     .from('profiles')
     .select('id, full_name, email')
     .eq('role', 'mentor')
     .eq('status', 'active');
 
-  return <UserSessionsClient
-    userId={session.user.id}
-    userName={profile?.full_name ?? ''}
-    mySessions={mySessions ?? []}
-    groupSessions={groupSessions ?? []}
-    myRequests={myRequests ?? []}
-    mentors={mentors ?? []}
-  />;
+  throwIfSupabaseError(mentorsError, 'mentors');
+
+  return (
+    <UserSessionsClient
+      userId={user.id}
+      userName={profile?.full_name ?? ''}
+      mySessions={mySessions ?? []}
+      groupSessions={groupSessions ?? []}
+      myRequests={myRequests ?? []}
+      mentors={mentors ?? []}
+    />
+  );
 }

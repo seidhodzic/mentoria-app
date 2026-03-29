@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
-import Link from 'next/link';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 
 type Question = {
   question: string;
@@ -123,14 +123,7 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
   // ── MENU ──
   if (phase === 'menu') return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {USER_NAV.map(item => (
-            <Link key={item.href} href={item.href as any} className={item.href === '/user/quizzes' ? 'active' : ''}>{item.label}</Link>
-          ))}
-        </nav>
-      </header>
+      <DashboardHeader navItems={USER_NAV} activeNav="/user/quizzes" />
       <div className="dash-content">
         <div className="page-header">
           <div className="eyebrow">AI-Powered Practice</div>
@@ -161,7 +154,7 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
                 </select>
               </div>
             </div>
-            <button onClick={startQuiz} className="btn btn-primary" style={{ fontSize: '0.85rem', padding: '13px 32px' }}>
+            <button onClick={startQuiz} className="btn btn-primary" style={{ padding: '13px 32px' }}>
               Generate Quiz with AI →
             </button>
           </div>
@@ -197,14 +190,14 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
                     const p = Math.round((a.score / a.total) * 100);
                     return (
                       <tr key={a.id}>
-                        <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{new Date(a.created_at).toLocaleDateString()}</td>
-                        <td style={{ fontWeight: 700 }}>{a.score}/{a.total}</td>
+                        <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(a.created_at).toLocaleDateString()}</td>
+                        <td style={{ fontFamily: "'Saira', sans-serif", fontWeight: 700, fontSize: '0.85rem' }}>{a.score}/{a.total}</td>
                         <td>
                           <span className={`badge ${p >= 70 ? 'badge-active' : p >= 50 ? 'badge-pending' : 'badge-suspended'}`}>
                             {p}% — {p >= 70 ? 'Pass' : p >= 50 ? 'Close' : 'Fail'}
                           </span>
                         </td>
-                        <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{a.total} questions</td>
+                        <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{a.total} questions</td>
                       </tr>
                     );
                   })}
@@ -221,8 +214,8 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
   if (phase === 'loading') return (
     <div style={{ minHeight: '100vh', background: 'var(--teal)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
       <div style={{ width: 48, height: 48, border: '3px solid rgba(247,188,21,0.2)', borderTop: '3px solid var(--gold)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      <div style={{ color: 'var(--gold)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Generating your quiz...</div>
-      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>AI is creating fresh questions</div>
+      <div style={{ fontFamily: "'Saira', sans-serif", color: 'var(--gold)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' }}>Generating your quiz...</div>
+      <div style={{ fontFamily: "'Saira', sans-serif", color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8 }}>AI is creating fresh questions</div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -235,13 +228,13 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
       <div style={{ minHeight: '100vh', background: 'var(--teal)', display: 'flex', flexDirection: 'column' }}>
         {/* Quiz header */}
         <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px 5%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(247,188,21,0.1)' }}>
-          <div style={{ fontFamily: 'Saira Condensed,sans-serif', fontWeight: 700, fontSize: '1.1rem', letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' }}>
+          <div style={{ fontFamily: "'Saira Condensed', sans-serif", fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.02em', lineHeight: 1, color: '#fff', textTransform: 'uppercase' }}>
             Mentor<span style={{ color: 'var(--gold)' }}>ia</span>
           </div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+          <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
             Question {current + 1} of {questions.length}
           </div>
-          <button onClick={() => setPhase('menu')} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 3, padding: '6px 14px', color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'Saira,sans-serif' }}>
+          <button onClick={() => setPhase('menu')} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 3, padding: '6px 14px', color: 'rgba(255,255,255,0.5)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: "'Saira', sans-serif" }}>
             Exit
           </button>
         </div>
@@ -254,10 +247,10 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
         {/* Question */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '48px 5%' }}>
           <div style={{ width: '100%', maxWidth: 680 }}>
-            <div style={{ color: 'var(--gold)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
+            <div style={{ fontFamily: "'Saira', sans-serif", color: 'var(--gold)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
               FIFA Agent Exam Practice
             </div>
-            <h2 style={{ fontFamily: 'Saira,sans-serif', fontSize: 'clamp(1rem,2.5vw,1.25rem)', fontWeight: 600, color: '#fff', lineHeight: 1.5, marginBottom: 32, textTransform: 'none', letterSpacing: 0 }}>
+            <h2 style={{ fontFamily: "'Saira Condensed', sans-serif", fontSize: 'clamp(1.4rem, 2.5vw, 2rem)', fontWeight: 900, letterSpacing: '0.02em', lineHeight: 1.2, color: '#fff', marginBottom: 32, textTransform: 'none' }}>
               {q.question}
             </h2>
 
@@ -275,7 +268,7 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
                 }
                 return (
                   <button key={i} onClick={() => handleAnswer(option)} disabled={!!selected}
-                    style={{ background: bg, border, borderRadius: 3, padding: '14px 18px', textAlign: 'left', cursor: selected ? 'default' : 'pointer', color, fontFamily: 'Saira,sans-serif', fontSize: '0.9rem', fontWeight: 500, transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    style={{ background: bg, border, borderRadius: 3, padding: '14px 18px', textAlign: 'left', cursor: selected ? 'default' : 'pointer', color, fontFamily: "'Saira', sans-serif", fontSize: '0.9rem', fontWeight: 400, transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ width: 24, height: 24, borderRadius: '50%', border: `1.5px solid ${selected ? (isCorrect ? '#38a169' : isSelected ? '#e53e3e' : 'rgba(255,255,255,0.15)') : 'rgba(255,255,255,0.25)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0, color: selected ? (isCorrect ? '#38a169' : isSelected ? '#e53e3e' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.5)' }}>
                       {['A','B','C','D'][i]}
                     </span>
@@ -286,14 +279,14 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
             </div>
 
             {showExplanation && (
-              <div style={{ background: 'rgba(247,188,21,0.08)', borderLeft: '3px solid var(--gold)', borderRadius: '0 3px 3px 0', padding: '14px 18px', marginBottom: 20, fontSize: '0.85rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>
-                <div style={{ color: 'var(--gold)', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Explanation</div>
+              <div style={{ background: 'rgba(247,188,21,0.08)', borderLeft: '3px solid var(--gold)', borderRadius: '0 3px 3px 0', padding: '14px 18px', marginBottom: 20, fontFamily: "'Saira', sans-serif", fontSize: '0.82rem', fontWeight: 400, lineHeight: 1.6, color: 'rgba(255,255,255,0.75)' }}>
+                <div style={{ fontFamily: "'Saira', sans-serif", color: 'var(--gold)', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Explanation</div>
                 {q.explanation}
               </div>
             )}
 
             {selected && (
-              <button onClick={handleNext} className="btn btn-primary" style={{ fontSize: '0.82rem' }}>
+              <button onClick={handleNext} className="btn btn-primary">
                 {current + 1 >= questions.length ? 'See Results →' : 'Next Question →'}
               </button>
             )}
@@ -308,15 +301,15 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
     <div style={{ minHeight: '100vh', background: 'var(--teal)', padding: '48px 5%' }}>
       <div style={{ maxWidth: 680, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ color: 'var(--gold)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>Quiz Complete</div>
-          <div style={{ fontFamily: 'Saira Condensed,sans-serif', fontWeight: 900, fontSize: 'clamp(3rem,8vw,5rem)', color: pct >= 70 ? '#68d391' : pct >= 50 ? 'var(--gold)' : '#fc8181', lineHeight: 1 }}>
+          <div style={{ fontFamily: "'Saira', sans-serif", color: 'var(--gold)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>Quiz Complete</div>
+          <div style={{ fontFamily: "'Saira Condensed', sans-serif", fontWeight: 900, fontSize: 'clamp(3rem,8vw,5rem)', lineHeight: 1, color: pct >= 70 ? '#68d391' : pct >= 50 ? 'var(--gold)' : '#fc8181' }}>
             {pct}%
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', marginTop: 8 }}>
+          <div style={{ fontFamily: "'Saira', sans-serif", color: 'rgba(255,255,255,0.6)', fontSize: '1rem', fontWeight: 300, lineHeight: 1.75, marginTop: 8 }}>
             {score} correct out of {questions.length} questions
           </div>
           <div style={{ marginTop: 12 }}>
-            <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: 3, fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', background: pct >= 70 ? 'rgba(56,161,105,0.2)' : pct >= 50 ? 'rgba(247,188,21,0.15)' : 'rgba(229,62,62,0.2)', color: pct >= 70 ? '#68d391' : pct >= 50 ? 'var(--gold)' : '#fc8181' }}>
+            <span style={{ display: 'inline-block', padding: '6px 16px', borderRadius: 3, fontFamily: "'Saira', sans-serif", fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', background: pct >= 70 ? 'rgba(56,161,105,0.2)' : pct >= 50 ? 'rgba(247,188,21,0.15)' : 'rgba(229,62,62,0.2)', color: pct >= 70 ? '#68d391' : pct >= 50 ? 'var(--gold)' : '#fc8181' }}>
               {pct >= 70 ? '✓ Exam Ready' : pct >= 50 ? 'Keep Practising' : 'More Study Needed'}
             </span>
           </div>
@@ -329,22 +322,22 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
 
         {/* Answer review */}
         <div style={{ marginBottom: 12 }}>
-          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 16 }}>Answer Review</div>
+          <div style={{ fontFamily: "'Saira', sans-serif", color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>Answer Review</div>
           {answers.map((a, i) => (
             <div key={i} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${a.isCorrect ? 'rgba(56,161,105,0.3)' : 'rgba(229,62,62,0.3)'}`, borderRadius: 3, padding: '16px 20px', marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 800, color: a.isCorrect ? '#68d391' : '#fc8181', flexShrink: 0, marginTop: 2 }}>{a.isCorrect ? '✓' : '✗'}</span>
-                <div style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, fontWeight: 500 }}>{a.question}</div>
+                <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, fontWeight: 400 }}>{a.question}</div>
               </div>
               {!a.isCorrect && (
-                <div style={{ fontSize: '0.78rem', color: '#fc8181', marginBottom: 6, marginLeft: 24 }}>
+                <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.78rem', fontWeight: 400, color: '#fc8181', marginBottom: 6, marginLeft: 24 }}>
                   Your answer: {a.selected.replace(/^[A-D]\.\s*/, '')}
                 </div>
               )}
-              <div style={{ fontSize: '0.78rem', color: '#68d391', marginBottom: 8, marginLeft: 24 }}>
+              <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.78rem', fontWeight: 400, color: '#68d391', marginBottom: 8, marginLeft: 24 }}>
                 {a.isCorrect ? 'Correct: ' : 'Correct answer: '}{a.correct.replace(/^[A-D]\.\s*/, '')}
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', marginLeft: 24, lineHeight: 1.5 }}>{a.explanation}</div>
+              <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.78rem', fontWeight: 400, color: 'rgba(255,255,255,0.45)', marginLeft: 24, lineHeight: 1.5 }}>{a.explanation}</div>
             </div>
           ))}
         </div>

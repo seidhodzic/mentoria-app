@@ -1,3 +1,4 @@
+import { requireUserForApi } from '@/lib/server/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const FIFA_TOPICS = [
@@ -24,6 +25,9 @@ const FIFA_TOPICS = [
 ];
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUserForApi();
+  if (auth.unauthorized) return auth.unauthorized;
+
   try {
     const { topic, count = 10 } = await req.json();
     const apiKey = process.env.ANTHROPIC_API_KEY;

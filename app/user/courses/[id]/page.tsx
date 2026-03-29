@@ -1,25 +1,62 @@
+import CoursePlayer from '@/features/courses/components/CoursePlayer';
+import { memberHasPremiumAccess } from '@/lib/member-entitlement';
+import { requireUser } from '@/lib/server/auth';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase-server';
-import Link from 'next/link';
-import CourseLessonClient from './CourseLessonClient';
 
 export default async function CoursePage({ params }: { params: { id: string } }) {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
+  const { supabase, user } = await requireUser();
 
-  const { data: course } = await supabase.from('courses').select('*').eq('id', params.id).eq('is_published', true).single();
+  const { data: profileRow, error: profileErr } = await supabase
+    .from('profiles')
+    .select('role, signup_access_type, status, is_active')
+    .eq('id', user.id)
+    .single();
+
+  throwIfSupabaseError(profileErr, 'profile', { ignoreCodes: ['PGRST116'] });
+
+  const { data: course, error: courseError } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('id', params.id)
+    .eq('is_published', true)
+    .single();
+
+  throwIfSupabaseError(courseError, 'course', { ignoreCodes: ['PGRST116'] });
   if (!course) redirect('/user/courses');
 
-  const { data: lessons } = await supabase.from('lessons').select('*').eq('course_id', params.id).order('sort_order');
-  const { data: progressRows } = await supabase.from('progress').select('*').eq('user_id', session.user.id);
+  const { data: lessons, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('*')
+    .eq('course_id', params.id)
+    .order('sort_order');
+
+  throwIfSupabaseError(lessonsError, 'lessons');
+
+  const { data: progressRows, error: progressError } = await supabase
+    .from('progress')
+    .select('*')
+    .eq('user_id', user.id);
+
+  throwIfSupabaseError(progressError, 'progress');
+
+  const { data: subRows, error: subError } = await supabase
+    .from('subscriptions')
+    .select('status')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  throwIfSupabaseError(subError, 'subscriptions');
+
+  const subscriptionActive = memberHasPremiumAccess(profileRow, subRows?.[0]?.status ?? null);
 
   return (
-    <CourseLessonClient
+    <CoursePlayer
       course={course}
       lessons={lessons ?? []}
-      progressRows={progressRows ?? []}
-      userId={session.user.id}
+      initialProgress={progressRows ?? []}
+      subscriptionActive={subscriptionActive}
     />
   );
 }

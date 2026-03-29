@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
-import Link from 'next/link';
+import DashboardHeader from '@/components/layout/DashboardHeader';
 
 type Session = {
   id: string; title: string; description: string | null;
@@ -73,19 +73,11 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
 
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {USER_NAV.map(item => (
-            <Link key={item.href} href={item.href as any} className={item.href === '/user/sessions' ? 'active' : ''}>{item.label}</Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
-            {showForm ? '✕ Cancel' : '+ Request Session'}
-          </button>
-        </div>
-      </header>
+      <DashboardHeader navItems={USER_NAV} activeNav="/user/sessions">
+        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+          {showForm ? '✕ Cancel' : '+ Request Session'}
+        </button>
+      </DashboardHeader>
 
       <div className="dash-content">
         <div className="page-header">
@@ -148,12 +140,12 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                          <span style={{ fontFamily: 'Saira Condensed,sans-serif', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', color: 'var(--teal)' }}>{s.title}</span>
+                          <span style={{ fontFamily: "'Saira Condensed', sans-serif", fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 1, color: 'var(--teal)' }}>{s.title}</span>
                           <span className={`badge ${s.type === 'group' ? 'badge-mentor' : 'badge-user'}`}>{s.type === 'group' ? 'Group' : '1-on-1'}</span>
                         </div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 4 }}>📅 {formatDate(s.scheduled_at)} · {s.duration_minutes} min</div>
-                        {mentor?.full_name && <div style={{ fontSize: '0.78rem', color: 'rgba(25,53,62,0.5)' }}>👤 Mentor: {mentor.full_name}</div>}
-                        {s.description && <div style={{ fontSize: '0.82rem', color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
+                        <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8, color: 'var(--text-muted)', marginBottom: 4 }}>📅 {formatDate(s.scheduled_at)} · {s.duration_minutes} min</div>
+                        {mentor?.full_name && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, color: 'rgba(25,53,62,0.5)' }}>👤 Mentor: {mentor.full_name}</div>}
+                        {s.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
                       </div>
                       {s.meet_link ? (
                         <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -163,7 +155,7 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
                           Join Meet
                         </a>
                       ) : (
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', padding: '6px 12px', border: '1px solid rgba(25,53,62,0.1)', borderRadius: 3 }}>Link pending</span>
+                        <span style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', padding: '6px 12px', border: '1px solid rgba(25,53,62,0.1)', borderRadius: 3 }}>Link pending</span>
                       )}
                     </div>
                   </div>
@@ -185,13 +177,13 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                          <span style={{ fontFamily: 'Saira Condensed,sans-serif', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', color: 'var(--teal)' }}>{s.title}</span>
+                          <span style={{ fontFamily: "'Saira Condensed', sans-serif", fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 1, color: 'var(--teal)' }}>{s.title}</span>
                           <span className="badge badge-mentor">Group</span>
                           <span className="badge badge-active">Open</span>
                         </div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 4 }}>📅 {formatDate(s.scheduled_at)} · {s.duration_minutes} min</div>
-                        {mentor?.full_name && <div style={{ fontSize: '0.78rem', color: 'rgba(25,53,62,0.5)' }}>👤 Mentor: {mentor.full_name}</div>}
-                        {s.description && <div style={{ fontSize: '0.82rem', color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
+                        <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8, color: 'var(--text-muted)', marginBottom: 4 }}>📅 {formatDate(s.scheduled_at)} · {s.duration_minutes} min</div>
+                        {mentor?.full_name && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, color: 'rgba(25,53,62,0.5)' }}>👤 Mentor: {mentor.full_name}</div>}
+                        {s.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
                       </div>
                       {s.meet_link && (
                         <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">Join Session</a>
@@ -215,9 +207,9 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
                   {myRequests.map(r => (
                     <tr key={r.id}>
                       <td style={{ fontWeight: 500 }}>{r.topic}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{r.preferred_time ?? '—'}</td>
+                      <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{r.preferred_time ?? '—'}</td>
                       <td><span className={`badge ${r.status === 'approved' ? 'badge-active' : r.status === 'declined' ? 'badge-suspended' : 'badge-pending'}`}>{r.status}</span></td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{new Date(r.created_at).toLocaleDateString()}</td>
+                      <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(r.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>

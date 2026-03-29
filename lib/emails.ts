@@ -144,6 +144,45 @@ function highlight(text: string) {
   </table>`;
 }
 
+export async function sendNewSignupNotificationToAdmin({
+  adminEmail,
+  memberEmail,
+  fullName,
+  profileType,
+  accessType,
+  planKey,
+}: {
+  adminEmail: string;
+  memberEmail: string;
+  fullName: string;
+  profileType: string;
+  accessType?: string;
+  planKey?: string;
+}) {
+  const rows = [
+    { label: 'Name', value: fullName || '—' },
+    { label: 'Email', value: memberEmail },
+    { label: 'Profile', value: profileType || '—' },
+  ];
+  if (accessType) rows.push({ label: 'Access', value: accessType });
+  if (planKey) rows.push({ label: 'Plan', value: planKey });
+
+  const content = `
+    ${eyebrow('New registration')}
+    ${heading('New Member Signup')}
+    ${subheading('Someone just joined Mentoria.')}
+    ${paragraph('A new account was created on the platform.')}
+    ${infoBox(rows)}
+    ${button('Open Admin', `${BASE_URL}/admin/users`)}
+  `;
+  return resend.emails.send({
+    from: FROM,
+    to: adminEmail,
+    subject: `New signup: ${fullName || memberEmail}`,
+    html: baseTemplate(`New signup: ${memberEmail}`, content, `New member: ${memberEmail}`),
+  });
+}
+
 export async function sendSessionConfirmationToMember({
   memberEmail, memberName, sessionTitle, sessionType,
   scheduledAt, durationMinutes, mentorName, meetLink,

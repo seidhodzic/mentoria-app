@@ -1,25 +1,30 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase-server';
+import AdminUsersClient from '@/features/admin-users/components/AdminUsersClient';
 import { normalizeRole } from '@/lib/role';
-import AdminUsersClient from './AdminUsersClient';
+import { requireUser } from '@/lib/server/auth';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
+import { redirect } from 'next/navigation';
 
 export default async function AdminUsersPage() {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
+  const { supabase, user } = await requireUser();
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single();
+
+  throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
   if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
 
-  const { data: users } = await supabase
+  const { data: users, error: usersError } = await supabase
     .from('profiles')
-    .select('id, email, full_name, role, status, created_at, updated_at')
+    .select(
+      'id, email, full_name, role, status, profile_type, signup_access_type, signup_plan_key, is_active, stripe_customer_id, created_at, updated_at'
+    )
     .order('created_at', { ascending: false });
+
+  throwIfSupabaseError(usersError, 'users');
 
   return <AdminUsersClient users={users ?? []} />;
 }

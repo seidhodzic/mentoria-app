@@ -1,3 +1,4 @@
+import { requireUserForApi } from '@/lib/server/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SYSTEM_PROMPT = `You are the Mentoria AI Assistant — an expert advisor embedded inside the Mentoria platform, a premium advisory platform focused on sports, investment, and education in the Balkans and beyond.
@@ -64,6 +65,9 @@ Personality and tone:
 Always remember: You are part of the Mentoria platform. When relevant, reference that Mentoria offers courses, materials, quizzes, and mentor sessions that can help the user go deeper on any topic.`;
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUserForApi();
+  if (auth.unauthorized) return auth.unauthorized;
+
   try {
     const { messages, userRole, userName } = await req.json();
     const apiKey = process.env.ANTHROPIC_API_KEY;

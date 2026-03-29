@@ -1,33 +1,38 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase-server';
+import DashboardHeader from '@/components/layout/DashboardHeader';
+import { requireUser } from '@/lib/server/auth';
+import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import Link from 'next/link';
 
+const USER_NAV = [
+  { label: 'Overview', href: '/user' },
+  { label: 'Courses', href: '/user/courses' },
+  { label: 'Materials', href: '/user/materials' },
+  { label: 'Quizzes', href: '/user/quizzes' },
+  { label: 'Sessions', href: '/user/sessions' },
+];
+
 export default async function UserMaterialsPage() {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
-  const { data: materials } = await supabase
+  const { supabase } = await requireUser();
+  const { data: materials, error: materialsError } = await supabase
     .from('materials')
     .select('*')
     .order('created_at', { ascending: false });
 
-  const categories = [...new Set((materials ?? []).map(m => m.category ?? 'general'))];
+  throwIfSupabaseError(materialsError, 'materials');
+
+  const categories = [...new Set((materials ?? []).map((m) => m.category ?? 'general'))];
 
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          <Link href="/user">Overview</Link>
-          <Link href="/user/courses">Courses</Link>
-          <Link href="/user/materials" className="active">Materials</Link>
-          <Link href="/user/quizzes">Quizzes</Link>
-          <Link href="/user/sessions">Sessions</Link>
-        </nav>
-        <div className="dash-header-right">
-          <Link href="/user" className="btn btn-outline btn-sm" style={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)' }}>← Dashboard</Link>
-        </div>
-      </header>
+      <DashboardHeader navItems={USER_NAV} activeNav="/user/materials">
+        <Link
+          href="/user"
+          className="btn btn-outline btn-sm"
+          style={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)' }}
+        >
+          ← Dashboard
+        </Link>
+      </DashboardHeader>
       <div className="dash-content">
         <div className="page-header">
           <div className="eyebrow">Members — Resources</div>
@@ -36,8 +41,8 @@ export default async function UserMaterialsPage() {
         </div>
         {materials && materials.length > 0 ? (
           <>
-            {categories.map(cat => {
-              const items = (materials ?? []).filter(m => (m.category ?? 'general') === cat);
+            {categories.map((cat) => {
+              const items = (materials ?? []).filter((m) => (m.category ?? 'general') === cat);
               if (!items.length) return null;
               return (
                 <div key={cat} style={{ marginBottom: 32 }}>
@@ -45,7 +50,7 @@ export default async function UserMaterialsPage() {
                     <h2 style={{ fontSize: '1rem', textTransform: 'uppercase' }}>{cat}</h2>
                   </div>
                   <div className="cards-grid">
-                    {items.map(m => (
+                    {items.map((m) => (
                       <div key={m.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                           <div>

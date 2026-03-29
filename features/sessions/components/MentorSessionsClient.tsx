@@ -1,18 +1,14 @@
 'use client';
-import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
-import Link from 'next/link';
+import type { SessionTypeEnum } from '@/lib/supabase-app-types';
+import type { Tables } from '@/types/supabase';
+import DashboardHeader from '@/components/layout/DashboardHeader';
+import { useState } from 'react';
 
-type Session = {
-  id: string; title: string; description: string | null;
-  type: string; status: string; meet_link: string | null;
-  scheduled_at: string; duration_minutes: number;
-  max_participants: number; notes: string | null;
+type Session = Tables<'sessions'> & {
   profiles?: { full_name: string | null; email: string } | null;
 };
-type Request = {
-  id: string; topic: string; message: string | null;
-  preferred_time: string | null; status: string; created_at: string;
+type Request = Tables<'session_requests'> & {
   profiles?: { full_name: string | null; email: string } | null;
 };
 type User = { id: string; full_name: string | null; email: string };
@@ -48,7 +44,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
   const [activeTab, setActiveTab] = useState<'sessions' | 'requests'>('sessions');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState('1on1');
+  const [type, setType] = useState<SessionTypeEnum>('1on1');
   const [meetLink, setMeetLink] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
   const [duration, setDuration] = useState('60');
@@ -103,7 +99,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
     } finally { setSaving(false); }
   }
 
-  async function updateSession(id: string, updates: Partial<Session>, memberProfile?: any) {
+  async function updateSession(id: string, updates: Partial<Tables<'sessions'>>, memberProfile?: any) {
     try {
       const supabase = createClient();
       const { error } = await supabase.from('sessions').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id);
@@ -154,19 +150,11 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
 
   return (
     <div className="dash-layout">
-      <header className="dash-header">
-        <Link href="/dashboard" className="dash-brand">Mentor<span>ia</span></Link>
-        <nav className="dash-nav">
-          {MENTOR_NAV.map(item => (
-            <Link key={item.href} href={item.href as any} className={item.href === '/mentor/sessions' ? 'active' : ''}>{item.label}</Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
-            {showForm ? '✕ Cancel' : '+ New Session'}
-          </button>
-        </div>
-      </header>
+      <DashboardHeader navItems={MENTOR_NAV} activeNav="/mentor/sessions">
+        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+          {showForm ? '✕ Cancel' : '+ New Session'}
+        </button>
+      </DashboardHeader>
 
       <div className="dash-content">
         <div className="page-header">
@@ -188,7 +176,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
                 </div>
                 <div className="form-group" style={{ margin: 0 }}>
                   <label>Session Type</label>
-                  <select value={type} onChange={e => { setType(e.target.value); if (e.target.value === '1on1') setMaxParticipants('1'); }}>
+                  <select value={type} onChange={e => { setType(e.target.value as SessionTypeEnum); if (e.target.value === '1on1') setMaxParticipants('1'); }}>
                     <option value="1on1">1-on-1 Session</option>
                     <option value="group">Group Session</option>
                   </select>
@@ -285,11 +273,11 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
                     <tr key={r.id}>
                       <td>
                         <div style={{ fontWeight: 600 }}>{(r.profiles as any)?.full_name ?? '—'}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{(r.profiles as any)?.email}</div>
+                        <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.72rem', fontWeight: 400, color: 'var(--text-muted)' }}>{(r.profiles as any)?.email}</div>
                       </td>
                       <td style={{ fontWeight: 500 }}>{r.topic}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{r.preferred_time ?? '—'}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.82rem', maxWidth: 200 }}>{r.message ?? '—'}</td>
+                      <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{r.preferred_time ?? '—'}</td>
+                      <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400, maxWidth: 200 }}>{r.message ?? '—'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button onClick={() => handleRequest(r, 'approved')} className="btn btn-primary btn-sm">Approve</button>
@@ -324,13 +312,13 @@ function SessionCard({ session, onUpdate, formatDate, isMentor }: {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: 'Saira Condensed,sans-serif', fontWeight: 900, fontSize: '1rem', textTransform: 'uppercase', color: 'var(--teal)' }}>{session.title}</span>
+            <span style={{ fontFamily: "'Saira Condensed', sans-serif", fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 1, color: 'var(--teal)' }}>{session.title}</span>
             <span className={`badge ${session.type === 'group' ? 'badge-mentor' : 'badge-user'}`}>{session.type === 'group' ? 'Group' : '1-on-1'}</span>
             <span className={`badge ${session.status === 'completed' ? 'badge-active' : session.status === 'cancelled' ? 'badge-suspended' : 'badge-pending'}`}>{session.status}</span>
           </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 6 }}>📅 {formatDate(session.scheduled_at)} · {session.duration_minutes} min</div>
-          {profile?.full_name && <div style={{ fontSize: '0.78rem', color: 'rgba(25,53,62,0.5)', marginBottom: 4 }}>👤 {profile.full_name} ({profile.email})</div>}
-          {session.description && <div style={{ fontSize: '0.82rem', color: 'rgba(25,53,62,0.6)' }}>{session.description}</div>}
+          <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.8, color: 'var(--text-muted)', marginBottom: 6 }}>📅 {formatDate(session.scheduled_at)} · {session.duration_minutes} min</div>
+          {profile?.full_name && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, color: 'rgba(25,53,62,0.5)', marginBottom: 4 }}>👤 {profile.full_name} ({profile.email})</div>}
+          {session.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(25,53,62,0.6)' }}>{session.description}</div>}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
           {session.meet_link ? (
@@ -341,20 +329,20 @@ function SessionCard({ session, onUpdate, formatDate, isMentor }: {
           ) : isMentor ? (
             <button onClick={() => setEditingLink(true)} className="btn btn-outline btn-sm">+ Add Meet Link</button>
           ) : (
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Link pending</span>
+            <span style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Link pending</span>
           )}
           {isMentor && session.status === 'scheduled' && (
-            <button onClick={() => onUpdate(session.id, { status: 'completed' }, profile)} className="btn btn-outline btn-sm" style={{ fontSize: '0.65rem' }}>Mark Complete</button>
+            <button onClick={() => onUpdate(session.id, { status: 'completed' }, profile)} className="btn btn-outline btn-sm">Mark Complete</button>
           )}
           {isMentor && session.status !== 'cancelled' && session.status !== 'completed' && (
-            <button onClick={() => onUpdate(session.id, { status: 'cancelled' }, profile)} className="btn btn-danger btn-sm" style={{ fontSize: '0.65rem' }}>Cancel</button>
+            <button onClick={() => onUpdate(session.id, { status: 'cancelled' }, profile)} className="btn btn-danger btn-sm">Cancel</button>
           )}
         </div>
       </div>
       {editingLink && (
         <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
           <input value={newLink} onChange={e => setNewLink(e.target.value)} placeholder="https://meet.google.com/xxx-xxxx-xxx"
-            style={{ flex: 1, padding: '8px 12px', border: '1.5px solid rgba(25,53,62,0.15)', borderRadius: 3, fontFamily: 'Saira,sans-serif', fontSize: '0.85rem', outline: 'none' }} />
+            style={{ flex: 1, padding: '8px 12px', border: '1.5px solid rgba(25,53,62,0.15)', borderRadius: 3, fontFamily: "'Saira', sans-serif", fontSize: '0.9rem', fontWeight: 400, outline: 'none' }} />
           <button onClick={() => { onUpdate(session.id, { meet_link: newLink }); setEditingLink(false); }} className="btn btn-primary btn-sm">Save</button>
           <button onClick={() => setEditingLink(false)} className="btn btn-outline btn-sm">Cancel</button>
         </div>
