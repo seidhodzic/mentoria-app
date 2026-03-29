@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import AIAssistant from '@/components/AIAssistant';
 import MentoriaLogo from '@/components/MentoriaLogo';
 import SignOutButton from '@/components/SignOutButton';
 
@@ -51,22 +52,7 @@ export default function DashboardHeader({
     (userName ? (
       <>
         <div className="dash-user-pill">
-          {userRole && (
-            <span
-              className="role-badge"
-              style={{
-                background:
-                  userRole === 'admin'
-                    ? 'var(--teal)'
-                    : userRole === 'mentor'
-                      ? 'var(--gold)'
-                      : 'rgba(25,53,62,0.15)',
-                color: userRole === 'mentor' ? 'var(--teal)' : 'var(--white)',
-              }}
-            >
-              {userRole}
-            </span>
-          )}
+          {userRole && <span className="role-badge">{userRole}</span>}
           <span className="name">{userName}</span>
         </div>
         <SignOutButton />
@@ -76,40 +62,39 @@ export default function DashboardHeader({
   return (
     <>
       <header className="dash-header">
-        <Link
-          href={brandHomeHref as any}
-          prefetch={false}
-          className="dash-brand dash-brand-logo inline-flex shrink-0 items-center no-underline"
-        >
-          <MentoriaLogo
-            priority
-            className="h-6 w-auto max-h-6"
-          />
-        </Link>
-        <nav className="dash-nav dash-nav-desktop" aria-label="Main">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href as any}
-              className={isActive(item.href) ? 'active' : ''}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="dash-header-right">
-          <button
-            type="button"
-            className="dash-menu-btn"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={open}
+        <div className="dash-header-inner">
+          <Link
+            href={brandHomeHref as any}
+            prefetch={false}
+            className="dash-brand dash-brand-logo inline-flex shrink-0 items-center no-underline"
           >
-            <span className="dash-menu-btn-bar" aria-hidden />
-            <span className="dash-menu-btn-bar" aria-hidden />
-            <span className="dash-menu-btn-bar" aria-hidden />
-          </button>
-          {right}
+            <MentoriaLogo priority className="h-9 w-auto max-h-[40px] min-w-[120px] object-contain object-left" />
+          </Link>
+          <nav className="dash-nav dash-nav-desktop min-w-0" aria-label="Main">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href as any}
+                className={isActive(item.href) ? 'active' : ''}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="dash-header-right">
+            <button
+              type="button"
+              className="dash-menu-btn"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={open}
+            >
+              <span className="dash-menu-btn-bar" aria-hidden />
+              <span className="dash-menu-btn-bar" aria-hidden />
+              <span className="dash-menu-btn-bar" aria-hidden />
+            </button>
+            {right}
+          </div>
         </div>
       </header>
 
@@ -152,6 +137,8 @@ export default function DashboardHeader({
           </div>
         </>
       )}
+
+      <AIAssistant userName={userName} userRole={userRole} />
     </>
   );
 }

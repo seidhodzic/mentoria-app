@@ -1,5 +1,5 @@
 import AdminUsersClient from '@/features/admin-users/components/AdminUsersClient';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
@@ -15,7 +15,9 @@ export default async function AdminUsersPage() {
 
   throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
-  if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
 
   const { data: users, error: usersError } = await supabase
     .from('profiles')

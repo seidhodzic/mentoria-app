@@ -1,5 +1,5 @@
 import AdminMaterialsClient from '@/features/materials/components/AdminMaterialsClient';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
@@ -14,7 +14,9 @@ export default async function AdminMaterialsPage() {
 
   throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
-  if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
 
   const { data: materials, error: materialsError } = await supabase
     .from('materials')

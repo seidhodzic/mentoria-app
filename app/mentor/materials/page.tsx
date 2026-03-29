@@ -1,3 +1,4 @@
+import AIAssistant from '@/components/AIAssistant';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 export default async function MentorMaterialsPage() {
@@ -9,6 +10,7 @@ export default async function MentorMaterialsPage() {
       <h2 style={{fontFamily:'Saira Condensed,sans-serif',textTransform:'uppercase',color:'#19353E',marginBottom:16}}>Materials</h2>
       <p style={{color:'rgba(25,53,62,0.6)',marginBottom:24}}>Material uploads coming in Phase 3.</p>
       <a href="/mentor" style={{color:'#F7BC15',fontWeight:700,textDecoration:'none'}}>← Back to Mentor</a>
+      <AIAssistant />
     </div>
   );
 }

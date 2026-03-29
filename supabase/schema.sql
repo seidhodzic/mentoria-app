@@ -18,6 +18,21 @@ as $$
   );
 $$;
 
+create or replace function public.auth_is_mentor_or_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid() and p.role in ('mentor', 'admin')
+  );
+$$;
+
+grant execute on function public.auth_is_mentor_or_admin() to authenticated;
+
 -- ── profiles (id = auth user) ─────────────────────────────────────────────
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -333,11 +348,7 @@ create policy "profiles_select_active_mentors_for_authenticated"
 create policy "profiles_select_active_users_for_mentor_or_admin"
   on public.profiles for select
   using (
-    exists (
-      select 1 from public.profiles me
-      where me.id = (select auth.uid())
-        and me.role in ('mentor', 'admin')
-    )
+    (select public.auth_is_mentor_or_admin())
     and role = 'user'
     and status = 'active'
   );

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import DashboardShell from '@/components/DashboardShell';
 const MENTOR_NAV = [
   {label:'Overview',href:'/mentor'},
@@ -14,7 +14,9 @@ export default async function MentorPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
   const { data: profile } = await supabase.from('profiles').select('role,full_name,status').eq('id',user.id).single();
-  if (normalizeRole(profile?.role) !== 'mentor' && normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'mentor' && normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
   const { count: totalMaterials } = await supabase.from('materials').select('*',{count:'exact',head:true});
   return (
     <DashboardShell title="Mentor Dashboard" eyebrow="Mentor Portal"

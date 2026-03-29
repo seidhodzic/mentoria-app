@@ -1,5 +1,6 @@
 import DashboardShell from '@/components/DashboardShell';
 import { normalizeRole } from '@/lib/role';
+import { ensureUserProfile } from '@/lib/server/ensure-user-profile';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
@@ -21,9 +22,22 @@ export default async function UserPage({
 }) {
   const { supabase, user } = await requireUser();
 
-  const { data: profile } = await supabase.from('profiles').select('role, full_name, status, email').eq('id', user.id).single();
+  const ensured = await ensureUserProfile(supabase, user);
+  if (!ensured.ok) {
+    throw new Error(
+      `We could not load your member profile (${ensured.message}). Sign out and try again, or contact support.`
+    );
+  }
 
-  if (!profile) redirect('/login');
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, full_name, status, email')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile) {
+    throw new Error('Profile is still unavailable after setup. Please refresh or contact support.');
+  }
   if (normalizeRole(profile.role) === 'admin') redirect('/admin');
   if (normalizeRole(profile.role) === 'mentor') redirect('/mentor');
 

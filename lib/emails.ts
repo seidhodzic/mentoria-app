@@ -3,7 +3,16 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = 'Mentoria <onboarding@resend.dev>';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-const LOGO_URL = 'https://rwqmvicsvkvfanblhocf.supabase.co/storage/v1/object/public/materials/MENTORIA.png';
+
+function supabasePublicStorageUrl(path: string): string {
+  const base = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '');
+  if (!base) return '';
+  return `${base}/storage/v1/object/public/${path.replace(/^\//, '')}`;
+}
+
+const LOGO_URL =
+  supabasePublicStorageUrl('materials/MENTORIA.png') ||
+  `${BASE_URL}/mentoria-logo.svg`;
 
 function baseTemplate(title: string, content: string, previewText: string = '') {
   return `<!DOCTYPE html>

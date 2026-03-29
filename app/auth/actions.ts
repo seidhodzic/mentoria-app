@@ -1,6 +1,8 @@
 'use server';
 
-import { headers } from 'next/headers';
+import { revalidatePath } from 'next/cache';
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { sendNewSignupNotificationToAdmin } from '@/lib/emails';
 import { env } from '@/lib/env';
 import {
@@ -9,10 +11,58 @@ import {
   type SubscriptionPlanKey,
 } from '@/lib/payments';
 import { allowRateLimit } from '@/lib/server/rate-limit-signup';
+import { ensureUserProfile } from '@/lib/server/ensure-user-profile';
+import { deleteSupabaseAuthCookieChunks } from '@/lib/supabase/auth-cookie';
 import { createServiceRoleClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 /** Reject auth.users rows older than this when verifying signup notifications. */
 const SIGNUP_MAX_AGE_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * Email/password sign-in on the server so session cookies are written via `setAll`
+ * (avoids client-only storage that middleware cannot see).
+ */
+export async function signInWithPasswordAction(
+  formData: FormData
+): Promise<{ error?: string } | void> {
+  const cookieStore = cookies();
+  deleteSupabaseAuthCookieChunks((name) => cookieStore.delete(name));
+
+  const email = String(formData.get('email') ?? '').trim();
+  const password = String(formData.get('password') ?? '').trim();
+  if (!email || !password) {
+    return { error: 'Email and password are required.' };
+  }
+
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    return { error: error.message };
+  }
+  if (!data.user) {
+    return { error: 'Sign in failed.' };
+  }
+
+  const ensured = await ensureUserProfile(supabase, data.user);
+  if (!ensured.ok) {
+    return { error: `Profile setup failed: ${ensured.message}` };
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', data.user.id)
+    .maybeSingle();
+
+  if (profile?.status === 'suspended') {
+    await supabase.auth.signOut();
+    return { error: 'Your account has been suspended. Contact support.' };
+  }
+
+  revalidatePath('/', 'layout');
+  redirect('/dashboard');
+}
 
 /**
  * Called after `signUp` succeeds. Uses the service role to confirm the user exists in `auth.users`

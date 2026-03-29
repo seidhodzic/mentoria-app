@@ -1,6 +1,6 @@
 import DashboardHeader from '@/components/layout/DashboardHeader';
 import SignOutButton from '@/components/SignOutButton';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
@@ -15,7 +15,9 @@ export default async function AdminQuizzesPage() {
 
   throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
-  if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
 
   const { data: attempts, error: attemptsError } = await supabase
     .from('quiz_attempts')

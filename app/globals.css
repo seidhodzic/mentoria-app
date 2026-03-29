@@ -25,14 +25,18 @@ p{color:rgba(25,53,62,0.7);font-family:'Saira',sans-serif;font-weight:300;font-s
 .site-header nav{display:flex;align-items:center;gap:24px}
 .site-header nav a{font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.75);text-decoration:none;transition:var(--transition)}
 .site-header nav a:hover{color:var(--gold)}
-.dash-header{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;background:var(--teal);border-bottom:1px solid rgba(247,188,21,0.15);display:flex;align-items:center;padding:0 24px;gap:24px}
-.dash-header .dash-brand{font-family:'Saira Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.12em;color:var(--white);text-transform:uppercase;text-decoration:none;flex-shrink:0}
+/* Dashboard header — aligned with marketing .site-header (luxury institutional bar) */
+.dash-header{position:fixed;top:0;left:0;right:0;z-index:100;height:72px;background:rgba(25,53,62,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(247,188,21,0.15);display:flex;align-items:center;justify-content:center;padding:0 clamp(16px,5%,56px)}
+.dash-header-inner{display:flex;align-items:center;width:100%;max-width:1440px;margin:0 auto;gap:clamp(12px,2.5vw,28px);min-height:72px}
+.dash-header .dash-brand{font-family:'Saira Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.12em;color:var(--white);text-transform:uppercase;text-decoration:none;flex-shrink:0;line-height:0}
 .dash-header .dash-brand span{color:var(--gold)}
-.dash-header .dash-brand.dash-brand-logo{font-family:inherit;font-size:unset;font-weight:unset;letter-spacing:unset;text-transform:none;line-height:0}
-.dash-nav{display:flex;align-items:center;gap:4px;flex:1;overflow-x:auto}
-.dash-nav a{font-family:'Saira',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.55);text-decoration:none;padding:6px 12px;border-radius:6px;transition:all 0.3s ease;white-space:nowrap}
-.dash-nav a:hover{color:rgba(255,255,255,0.95);background:rgba(255,255,255,0.08)}
-.dash-nav a.active{color:var(--gold);background:rgba(247,188,21,0.12);box-shadow:0 0 0 1px rgba(247,188,21,0.25)}
+.dash-header .dash-brand.dash-brand-logo{font-family:inherit;font-size:unset;font-weight:unset;letter-spacing:unset;text-transform:none}
+/* Center nav between logo and actions — same rhythm as index marketing header */
+.dash-nav{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;overflow-x:auto;padding:0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.dash-nav::-webkit-scrollbar{display:none}
+.dash-nav a{font-family:'Saira Condensed',sans-serif;font-size:0.76rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(239,239,239,0.88);text-decoration:none;padding:10px 12px;border-radius:2px;transition:color 0.2s ease,border-color 0.2s ease;white-space:nowrap;border-bottom:2px solid transparent;background:transparent}
+.dash-nav a:hover{color:var(--gold);border-bottom-color:var(--gold)}
+.dash-nav a.active{color:var(--gold);border-bottom-color:var(--gold);background:transparent;box-shadow:none}
 .dash-menu-btn{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;margin:0 -6px 0 8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:6px;cursor:pointer;flex-shrink:0;transition:all 0.3s ease}
 .dash-menu-btn:hover{background:rgba(255,255,255,0.12);border-color:rgba(247,188,21,0.35)}
 .dash-menu-btn-bar{display:block;height:2px;width:100%;background:var(--gold);border-radius:1px}
@@ -45,40 +49,46 @@ p{color:rgba(25,53,62,0.7);font-family:'Saira',sans-serif;font-weight:300;font-s
 .dash-nav-close{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:rgba(255,255,255,0.85);font-size:1.4rem;line-height:1;cursor:pointer;transition:all 0.3s ease}
 .dash-nav-close:hover{border-color:rgba(247,188,21,0.4);color:var(--gold)}
 .dash-nav-panel-links{display:flex;flex-direction:column;padding:12px 16px 24px;gap:4px;overflow-y:auto}
-.dash-nav-panel-links a{font-family:'Saira',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.75);text-decoration:none;padding:14px 16px;border-radius:6px;transition:all 0.3s ease}
-.dash-nav-panel-links a:hover,.dash-nav-panel-links a.active{color:var(--gold);background:rgba(247,188,21,0.12)}
-.course-lesson-layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 64px);padding-top:64px}
+.dash-nav-panel-links a{font-family:'Saira Condensed',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.82);text-decoration:none;padding:16px 18px;border-radius:4px;transition:all 0.3s ease;border-left:3px solid transparent}
+.dash-nav-panel-links a:hover,.dash-nav-panel-links a.active{color:var(--gold);background:rgba(247,188,21,0.1);border-left-color:var(--gold);text-shadow:0 0 20px rgba(247,188,21,0.35)}
+.course-lesson-layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 72px);padding-top:72px}
 .course-lesson-sidebar{background:#fff;border-right:1px solid rgba(25,53,62,0.08);padding:24px 0;overflow-y:auto}
 .course-lesson-main{padding:36px 40px;overflow-y:auto;min-width:0}
 .app-route-spinner{width:48px;height:48px;border:3px solid rgba(247,188,21,0.2);border-top-color:var(--gold);border-radius:50%;animation:appSpin 0.85s linear infinite}
 @keyframes appSpin{to{transform:rotate(360deg)}}
 [data-sonner-toaster]{z-index:1100!important}
-.dash-header-right{display:flex;align-items:center;gap:12px;margin-left:auto;flex-shrink:0}
-.dash-user-pill{display:flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:100px}
-.dash-user-pill .role-badge{font-family:'Saira',sans-serif;font-size:0.62rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;background:var(--gold);color:var(--teal);padding:2px 6px;border-radius:2px}
-.dash-user-pill .name{font-family:'Saira',sans-serif;font-size:0.72rem;font-weight:600;color:rgba(255,255,255,0.8);letter-spacing:0.04em}
+.dash-header-right{display:flex;align-items:center;gap:clamp(8px,1.5vw,14px);flex-shrink:0}
+.dash-user-pill{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;background:transparent;border:1px solid rgba(247,188,21,0.45);border-radius:100px}
+.dash-user-pill .role-badge{font-family:'Saira Condensed',sans-serif;font-size:0.62rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;background:#F7BC15;color:var(--teal);padding:4px 9px;border-radius:6px}
+.dash-user-pill .name{font-family:'Saira Condensed',sans-serif;font-size:0.78rem;font-weight:600;color:rgba(239,239,239,0.95);letter-spacing:0.06em}
 .container{max-width:1280px;margin:0 auto;padding:0 5%}
 main{padding-top:72px}
-.dash-layout{display:flex;min-height:100vh;padding-top:64px}
-.dash-content{flex:1;padding:36px 32px;max-width:1280px;margin:0 auto;width:100%}
-.page-header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(25,53,62,0.08)}
+/* Dashboard shell: deep navy frame + off-white paper content */
+.dash-layout{display:flex;flex-direction:column;min-height:100vh;padding-top:72px;background:#19353E}
+.dash-content{flex:1;padding:clamp(28px,4vw,44px) clamp(16px,4vw,40px);max-width:1320px;margin:0 auto;width:100%;background:#EFEFEF;box-shadow:0 -4px 48px rgba(0,0,0,0.12)}
+.page-header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(25,53,62,0.1)}
+.dash-content .page-header h1{font-family:'Saira Condensed',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:0.02em;color:var(--teal)}
+.dash-content .page-header p{color:rgba(25,53,62,0.72)}
+.dash-content .section-header h2{font-family:'Saira Condensed',sans-serif;font-weight:900;letter-spacing:0.02em;text-transform:uppercase;color:var(--teal)}
 .page-header .eyebrow{font-family:'Saira',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#F7BC15;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .page-header .eyebrow::before{content:'';width:20px;height:2px;background:var(--gold)}
 .page-header p{font-family:'Saira',sans-serif;font-size:0.88rem;font-weight:300;line-height:1.8;margin-top:6px;max-width:520px}
 .card{background:var(--white);border-radius:6px;border:1px solid rgba(25,53,62,0.07);padding:24px;transition:all 0.3s ease}
 .card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-.stat-card{background:var(--white);border-radius:6px;border:1px solid rgba(25,53,62,0.07);padding:20px 24px;position:relative;overflow:hidden}
+.stat-card{background:var(--white);border-radius:6px;border:1px solid rgba(25,53,62,0.08);padding:20px 24px;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(25,53,62,0.06)}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--gold),var(--gold-dark))}
 .stat-card .stat-label{font-family:'Saira',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(25,53,62,0.45);margin-bottom:8px}
 .stat-card .stat-value{font-family:'Saira Condensed',sans-serif;font-size:2rem;font-weight:900;color:var(--teal);line-height:1}
 .stat-card .stat-sub{font-family:'Saira',sans-serif;font-size:0.72rem;color:rgba(25,53,62,0.4);margin-top:4px;font-weight:400}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.action-card{background:var(--white);border-radius:6px;border:1px solid rgba(25,53,62,0.07);padding:24px;cursor:pointer;transition:all 0.3s ease;text-decoration:none;display:block}
-.action-card:hover{border-color:var(--gold);box-shadow:0 8px 32px rgba(247,188,21,0.1);transform:translateY(-2px)}
-.action-card .icon-wrap{width:40px;height:40px;background:var(--teal);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-.action-card h3{margin-bottom:6px;color:var(--teal);font-family:'Saira Condensed',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:0.02em;text-transform:uppercase}
-.action-card p{font-family:'Saira',sans-serif;font-size:0.88rem;font-weight:300;line-height:1.75}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+/* Service Suite cards — dark institutional base, gold accents (index.html service-card spirit) */
+.action-card{background:linear-gradient(155deg,#142a32 0%,#19353E 48%,#1a3d48 100%);border-radius:6px;border:1px solid rgba(247,188,21,0.22);padding:26px 24px;cursor:pointer;transition:all 0.3s ease;text-decoration:none;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.2)}
+.action-card:hover{border-color:rgba(247,188,21,0.65);box-shadow:0 0 0 1px rgba(247,188,21,0.4),0 16px 48px rgba(247,188,21,0.12);transform:translateY(-8px)}
+.action-card .icon-wrap{width:44px;height:44px;background:rgba(247,188,21,0.1);border:1px solid rgba(247,188,21,0.28);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.action-card .icon-wrap svg{stroke:var(--gold)!important}
+.action-card h3{margin-bottom:8px;color:var(--white);font-family:'Saira Condensed',sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:0.06em;text-transform:uppercase}
+.action-card p{font-family:'Saira',sans-serif;font-size:0.88rem;font-weight:300;line-height:1.75;color:rgba(255,255,255,0.72)}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:16px}
 .section-header h2{font-family:'Saira Condensed',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:900;letter-spacing:0.02em;text-transform:uppercase;line-height:1}
 .table-wrap{background:var(--white);border-radius:6px;border:1px solid rgba(25,53,62,0.07);overflow:hidden}
@@ -96,8 +106,10 @@ tr:hover td{background:rgba(25,53,62,0.02)}
 .badge-pending{background:rgba(247,188,21,0.15);color:#92600a}
 .badge-suspended{background:rgba(229,62,62,0.12);color:#c53030}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border:none;border-radius:6px;font-family:'Saira',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all 0.3s ease;white-space:nowrap}
+.dash-header .btn,.dash-content .btn,.dash-layout .btn,.course-lesson-layout .btn{font-family:'Saira Condensed',sans-serif;letter-spacing:0.12em}
 .btn-primary{background:var(--gold);color:var(--teal)}
 .btn-primary:hover{filter:brightness(1.05);transform:scale(1.01)}
+.dash-sign-out svg{stroke:var(--teal)}
 .btn-primary:active{transform:scale(1)}
 .btn-teal{background:var(--teal);color:var(--white)}
 .btn-teal:hover{background:var(--teal-mid);filter:brightness(1.06);transform:scale(1.01)}
@@ -131,7 +143,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:var(
 .auth-success{background:rgba(56,161,105,0.08);border:1px solid rgba(56,161,105,0.2);border-radius:var(--radius);padding:10px 14px;font-family:'Saira',sans-serif;font-size:0.82rem;font-weight:400;line-height:1.6;color:var(--success);margin-top:12px}
 .auth-footer{text-align:center;font-family:'Saira',sans-serif;font-size:0.72rem;font-weight:400;color:rgba(25,53,62,0.4);margin-top:20px}
 .auth-footer a{color:var(--gold-dark);font-weight:700;text-decoration:none}
-.sign-out-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-family:'Saira',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.3s ease}
+.sign-out-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-family:'Saira Condensed',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.3s ease}
 .sign-out-btn:hover{border-color:rgba(229,62,62,0.5);color:#fc8181}
 .empty-state{text-align:center;padding:60px 24px;color:rgba(25,53,62,0.35)}
 .empty-state h3{font-family:'Saira Condensed',sans-serif;font-size:1rem;font-weight:900;text-transform:uppercase;line-height:1;color:var(--teal)}

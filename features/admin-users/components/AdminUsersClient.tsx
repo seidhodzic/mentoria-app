@@ -162,7 +162,7 @@ export default function AdminUsersClient({ users: initialUsers }: { users: User[
     <div className="dash-layout">
       <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/users">
         <div className="dash-user-pill">
-          <span className="role-badge" style={{ background: 'var(--teal)', color: '#fff' }}>admin</span>
+          <span className="role-badge">admin</span>
         </div>
         <a href="/admin" className="btn btn-outline btn-sm" style={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)' }}>
           ← Overview

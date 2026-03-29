@@ -19,7 +19,6 @@ PROJECT_REF="${SUPABASE_PROJECT_REF:-}"
 if [[ -z "$PROJECT_REF" && -n "${NEXT_PUBLIC_SUPABASE_URL:-}" ]]; then
   PROJECT_REF="$(printf '%s' "$NEXT_PUBLIC_SUPABASE_URL" | sed -n 's|https://\([^.]*\)\.supabase\.co.*|\1|p')"
 fi
-PROJECT_REF="${PROJECT_REF:-rwqmvicsvkvfanblhocf}"
 
 if [[ -n "${DATABASE_URL:-}" ]]; then
   echo "Generating types via DATABASE_URL → $OUT"
@@ -27,6 +26,10 @@ if [[ -n "${DATABASE_URL:-}" ]]; then
 fi
 
 if [[ -n "${SUPABASE_ACCESS_TOKEN:-}" ]]; then
+  if [[ -z "$PROJECT_REF" ]]; then
+    echo "Set NEXT_PUBLIC_SUPABASE_URL or SUPABASE_PROJECT_REF for --project-id." >&2
+    exit 1
+  fi
   export SUPABASE_ACCESS_TOKEN
   echo "Generating types via Supabase API (project $PROJECT_REF) → $OUT"
   exec npx --yes supabase gen types typescript --project-id "$PROJECT_REF" --schema public --schema storage > "$OUT"

@@ -1,5 +1,5 @@
 import AdminLessonsClient from '@/features/courses/components/AdminLessonsClient';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import { redirect } from 'next/navigation';
@@ -14,7 +14,9 @@ export default async function AdminLessonsPage({ params }: { params: { id: strin
 
   throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
-  if (normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
 
   const { data: course, error: courseError } = await supabase
     .from('courses')

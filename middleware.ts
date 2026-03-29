@@ -2,50 +2,75 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
+import { getSupabaseAuthCookieOptions } from '@/lib/supabase/auth-cookie';
 import { memberHasPremiumAccess } from '@/lib/member-entitlement';
 import { getDashboardPath, normalizeRole } from '@/lib/role';
+
+/** Copy Set-Cookie headers from the session refresh response onto a redirect (middleware must not drop refreshed tokens). */
+function redirectWithSessionCookies(
+  request: NextRequest,
+  sessionResponse: NextResponse,
+  toPath: string
+) {
+  const url = new URL(toPath, request.url);
+  const redirectResponse = NextResponse.redirect(url);
+  sessionResponse.cookies.getAll().forEach((cookie) => {
+    redirectResponse.cookies.set(cookie);
+  });
+  return redirectResponse;
+}
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: { headers: request.headers },
   });
 
-  // Cast: @supabase/ssr generic arity differs from SupabaseClient<Database> in this dependency set.
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      ...getSupabaseAuthCookieOptions(),
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set({ name, value, ...options });
+          });
           response = NextResponse.next({
             request: { headers: request.headers },
           });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({
-            request: { headers: request.headers },
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set({ name, value, ...options });
           });
-          response.cookies.set({ name, value: '', ...options });
         },
       },
     }
   ) as unknown as SupabaseClient<Database>;
 
-  // Use getUser() (not getSession()): validates the JWT with Supabase Auth on each request.
-  // Session refresh + cookie updates run as part of this flow via the cookie handlers above.
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
+  if (user) {
+    if (process.env.NODE_ENV === 'development') {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log('MIDDLEWARE: User has session', session);
+    }
+  } else if (authError && process.env.NODE_ENV === 'development') {
+    console.warn('[middleware] getUser:', authError.message);
+  }
+
   if (!user) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    // Do not call signOut() here: it runs on every unauthenticated hit to /user etc. and can race
+    // with the first request after login before cookies attach, clearing the new session.
+    // Stale/invalid JWTs are dropped naturally on redirect; use login page sign-in to reset cookies.
+    return redirectWithSessionCookies(request, response, '/');
   }
 
   /** Router hub: avoid RSC-only redirect loops / repeated fetches — send users straight to their home. */
@@ -58,7 +83,7 @@ export async function middleware(request: NextRequest) {
     const meta = user.user_metadata as { role?: string } | undefined;
     const role = normalizeRole(profile?.role ?? meta?.role);
     const dest = getDashboardPath(role);
-    return NextResponse.redirect(new URL(dest, request.url));
+    return redirectWithSessionCookies(request, response, dest);
   }
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/mentor')) {
@@ -71,13 +96,21 @@ export async function middleware(request: NextRequest) {
     const role = profile?.role ?? 'user';
 
     if (profile?.status === 'suspended') {
-      return NextResponse.redirect(new URL('/login?error=suspended', request.url));
+      return redirectWithSessionCookies(request, response, '/login?error=suspended');
     }
     if (pathname.startsWith('/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return redirectWithSessionCookies(
+        request,
+        response,
+        getDashboardPath(normalizeRole(role))
+      );
     }
     if (pathname.startsWith('/mentor') && role !== 'mentor' && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return redirectWithSessionCookies(
+        request,
+        response,
+        getDashboardPath(normalizeRole(role))
+      );
     }
   }
 
@@ -104,7 +137,7 @@ export async function middleware(request: NextRequest) {
 
       const latestSub = subRows?.[0]?.status ?? null;
       if (!memberHasPremiumAccess(profile, latestSub)) {
-        return NextResponse.redirect(new URL('/user?locked=1', request.url));
+        return redirectWithSessionCookies(request, response, '/user?locked=1');
       }
     }
   }
@@ -113,6 +146,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Include bare `/dashboard` — some Next versions do not match `/dashboard/:path*` without a trailing segment.
-  matcher: ['/dashboard', '/dashboard/:path*', '/admin/:path*', '/mentor/:path*', '/user/:path*'],
+  matcher: [
+    '/dashboard',
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/mentor/:path*',
+    '/user',
+    '/user/:path*',
+  ],
 };

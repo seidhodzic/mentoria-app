@@ -1,12 +1,14 @@
 import MentorSessionsClient from '@/features/sessions/components/MentorSessionsClient';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/server/auth';
 
 export default async function MentorSessionsPage() {
   const { supabase, user } = await requireUser();
   const { data: profile } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single();
-  if (normalizeRole(profile?.role) !== 'mentor' && normalizeRole(profile?.role) !== 'admin') redirect('/dashboard');
+  if (normalizeRole(profile?.role) !== 'mentor' && normalizeRole(profile?.role) !== 'admin') {
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
+  }
 
   const { data: sessions } = await supabase
     .from('sessions')

@@ -2,27 +2,31 @@ import { cookies } from 'next/headers';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
+import { getSupabaseAuthCookieOptions } from '@/lib/supabase/auth-cookie';
 
+/**
+ * Server Supabase client. Uses `getAll` / `setAll` so chunked auth cookies stay in sync
+ * with middleware and `@supabase/ssr` (replaces deprecated `get` / `set` / `remove`).
+ */
 export function createClient(): SupabaseClient<Database> {
   const cookieStore = cookies();
-  // Cast: @supabase/ssr generic arity differs from SupabaseClient<Database> in this dependency set.
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      ...getSupabaseAuthCookieOptions(),
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
-            cookieStore.set({ name, value, ...options });
-          } catch {}
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options });
-          } catch {}
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set({ name, value, ...options });
+            });
+          } catch {
+            // Called from a Server Component: cookies are read-only. Middleware still refreshes the session.
+          }
         },
       },
     }

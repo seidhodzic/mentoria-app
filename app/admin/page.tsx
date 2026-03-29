@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
-import { normalizeRole } from '@/lib/role';
+import { getDashboardPath, normalizeRole } from '@/lib/role';
 import DashboardShell from '@/components/DashboardShell';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 
@@ -30,7 +30,7 @@ export default async function AdminPage() {
   throwIfSupabaseError(profileError, 'profile', { ignoreCodes: ['PGRST116'] });
 
   if (normalizeRole(profile?.role) !== 'admin') {
-    redirect('/dashboard');
+    redirect(getDashboardPath(normalizeRole(profile?.role)));
   }
 
   const [

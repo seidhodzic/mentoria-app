@@ -1,6 +1,10 @@
 'use client';
 
-import { handleCheckout, notifyAdminOfSignup } from '@/app/auth/actions';
+import {
+  handleCheckout,
+  notifyAdminOfSignup,
+  signInWithPasswordAction,
+} from '@/app/auth/actions';
 import PlanModal from '@/components/auth/PlanModal';
 import ProfileRoleHint from '@/components/auth/ProfileRoleHint';
 import {
@@ -10,9 +14,9 @@ import {
   resolveSignupPlanKey,
 } from '@/lib/auth/register-options';
 import { createClient } from '@/lib/supabase-browser';
-import { getDashboardPath, normalizeRole } from '@/lib/role';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect';
+import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 function fieldClass(extra = '') {
@@ -24,7 +28,6 @@ function labelClass() {
 }
 
 export default function AuthForm() {
-  const router = useRouter();
   const pathname = usePathname();
   const isRegister = pathname === '/register';
 
@@ -156,27 +159,12 @@ export default function AuthForm() {
         return;
       }
 
-      const { data, error: signInErr } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (signInErr) throw signInErr;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role, status')
-        .eq('id', data.user.id)
-        .single();
-
-      if (profile?.status === 'suspended') {
-        await supabase.auth.signOut();
-        throw new Error('Your account has been suspended. Contact support.');
+      const signInResult = await signInWithPasswordAction(fd);
+      if (signInResult?.error) {
+        throw new Error(signInResult.error);
       }
-
-      const role = normalizeRole(profile?.role ?? data.user.user_metadata?.role);
-      router.push(getDashboardPath(role) as '/');
-      router.refresh();
     } catch (err) {
+      if (isRedirectError(err)) throw err;
       setRedirectingToPayment(false);
       setError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {

@@ -1,4 +1,3 @@
-import AIAssistant from './AIAssistant';
 import DashboardHeader from '@/components/layout/DashboardHeader';
 
 type NavItem = { label: string; href: string };
@@ -45,9 +44,6 @@ export default function DashboardShell({
 
         {children}
       </div>
-
-      {/* AI Assistant — available on every dashboard page */}
-      <AIAssistant userName={userName} userRole={userRole} />
     </div>
   );
 }
