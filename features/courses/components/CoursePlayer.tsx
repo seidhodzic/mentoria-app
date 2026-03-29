@@ -115,7 +115,7 @@ function LessonTypography({
 }) {
   return (
     <div
-      className={`prose prose-slate max-w-none rounded-sm border border-[rgba(25,53,62,0.08)] bg-white px-5 py-8 shadow-sm md:px-10 md:py-10 ${
+      className={`markdown-lesson max-w-none rounded-sm border border-[rgba(25,53,62,0.08)] bg-white px-5 py-8 shadow-sm md:px-10 md:py-10 ${
         hasVideo ? 'mt-6' : ''
       }`}
     >

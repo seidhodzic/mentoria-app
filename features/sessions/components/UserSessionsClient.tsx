@@ -20,8 +20,8 @@ const USER_NAV = [
   { label: 'Sessions', href: '/user/sessions' },
 ];
 
-export default function UserSessionsClient({ userId, userName, mySessions, groupSessions, myRequests: initialReqs, mentors }: {
-  userId: string; userName: string;
+export default function UserSessionsClient({ userId, userName, userEmail, mySessions, groupSessions, myRequests: initialReqs, mentors }: {
+  userId: string; userName: string; userEmail: string;
   mySessions: Session[]; groupSessions: Session[];
   myRequests: Request[]; mentors: Mentor[];
 }) {
@@ -55,7 +55,20 @@ export default function UserSessionsClient({ userId, userName, mySessions, group
       }).select().single();
       if (error) throw error;
       setMyRequests(prev => [data, ...prev]);
-      fetch("/api/sessions/notify", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ type:"request_submitted", mentorEmail: mentors.find(m => m.id === selectedMentor)?.email ?? "admin@mentoria.com", mentorName: mentors.find(m => m.id === selectedMentor)?.full_name ?? "Mentor", memberName: userName, memberEmail: "", topic, message: reqMessage, preferredTime }) }).catch(()=>{});
+      fetch('/api/sessions/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'request_submitted',
+          mentorEmail: mentors.find((m) => m.id === selectedMentor)?.email ?? 'admin@mentoria.com',
+          mentorName: mentors.find((m) => m.id === selectedMentor)?.full_name ?? 'Mentor',
+          memberName: userName,
+          memberEmail: userEmail,
+          topic,
+          message: reqMessage,
+          preferredTime,
+        }),
+      }).catch(() => {});
       setTopic(''); setReqMessage(''); setPreferredTime(''); setSelectedMentor('');
       setShowForm(false);
       showMsg('success', 'Session request submitted. Your mentor will be in touch.');

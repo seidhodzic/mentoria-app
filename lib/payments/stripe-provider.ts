@@ -1,12 +1,37 @@
+import Stripe from 'stripe';
+
+/** Re-export for route handlers that need `Stripe.Event` / `Stripe.Metadata` without importing `stripe` directly. */
+export { Stripe };
 import { env } from '@/lib/env';
-import { getStripe } from '@/lib/stripe';
 import { getSubscriptionPriceId } from '@/lib/payments/stripe-prices';
 import type { CheckoutInput, CheckoutResult } from '@/lib/payments/types';
+
+let stripeSingleton: Stripe | null = null;
+
+/** Server-only Stripe client. Requires `STRIPE_SECRET_KEY`. */
+export function getStripe(): Stripe {
+  if (!env.stripeSecretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  if (!stripeSingleton) {
+    stripeSingleton = new Stripe(env.stripeSecretKey);
+  }
+  return stripeSingleton;
+}
+
+/** Lazily delegates to {@link getStripe} — supports `stripe.checkout.sessions.create(...)`. */
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    const client = getStripe();
+    const value = Reflect.get(client as object, prop, client);
+    return typeof value === 'function' ? (value as (...args: unknown[]) => unknown).bind(client) : value;
+  },
+});
 
 /**
  * Stripe Checkout Session (subscription).
  * Works with **Test Mode** (`STRIPE_SECRET_KEY=sk_test_…`, test price IDs) or Live keys — same API.
- * Always attach `metadata.supabase_user_id` so `app/api/webhook/stripe/route.ts` stays stable.
+ * Always attach `metadata.userId` (and legacy `supabase_user_id`) for webhooks.
  */
 export async function createStripeCheckoutSession(input: CheckoutInput): Promise<CheckoutResult> {
   if (!env.stripeSecretKey) {
@@ -33,10 +58,12 @@ export async function createStripeCheckoutSession(input: CheckoutInput): Promise
       success_url: `${base}/login?checkout=success`,
       cancel_url: `${base}/register?checkout=cancel`,
       metadata: {
+        userId: input.userId,
         supabase_user_id: input.userId,
       },
       subscription_data: {
         metadata: {
+          userId: input.userId,
           supabase_user_id: input.userId,
         },
       },

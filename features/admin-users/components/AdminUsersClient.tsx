@@ -49,7 +49,7 @@ function AccessBadge({ value }: { value: string | null }) {
     <span
       className={
         isSub
-          ? 'inline-flex max-w-[11rem] truncate rounded-full border border-[rgba(25,53,62,0.22)] bg-[#19353E] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-mentoria-gold'
+          ? 'inline-flex max-w-[11rem] truncate rounded-full border border-[rgba(25,53,62,0.22)] bg-[#19353E] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-gold'
           : 'inline-flex max-w-[11rem] truncate rounded-full border border-[rgba(247,188,21,0.4)] bg-[rgba(247,188,21,0.12)] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-[#19353E]'
       }
       title={label}
@@ -93,7 +93,7 @@ function PlanBadge({ value }: { value: string | null }) {
     <span
       className={
         isSubscription
-          ? 'inline-flex max-w-[13rem] truncate rounded-full border border-[rgba(25,53,62,0.2)] bg-[#19353E] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em] text-mentoria-gold'
+          ? 'inline-flex max-w-[13rem] truncate rounded-full border border-[rgba(25,53,62,0.2)] bg-[#19353E] px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.06em] text-gold'
           : 'inline-flex max-w-[13rem] truncate rounded-full border border-[rgba(247,188,21,0.38)] bg-[rgba(247,188,21,0.13)] px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.04em] text-[#19353E]'
       }
       title={label}

@@ -1,6 +1,6 @@
 'use client';
-
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Error({
   error,
@@ -14,61 +14,26 @@ export default function Error({
   }, [error]);
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
-        background: 'var(--teal)',
-        textAlign: 'center',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 440,
-          background: 'var(--white)',
-          borderRadius: 'var(--radius)',
-          padding: '40px 36px',
-          border: '1px solid rgba(247, 188, 21, 0.25)',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.25)',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "'Saira', sans-serif",
-            fontSize: '0.65rem',
-            fontWeight: 700,
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: '#F7BC15',
-            marginBottom: 12,
-          }}
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-teal px-5 text-center">
+      <p className="font-saira text-xs font-bold uppercase tracking-widest text-gold">Something went wrong</p>
+      <h1 className="font-saira-condensed text-5xl font-black uppercase tracking-wide text-white">Error</h1>
+      <p className="max-w-sm font-saira text-sm leading-relaxed text-white/50">
+        {error.message || 'An unexpected error occurred. Please try again.'}
+      </p>
+      <div className="mt-2 flex gap-3">
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-sm bg-gold px-7 py-3 font-saira text-xs font-bold uppercase tracking-widest text-teal transition-all hover:bg-gold-dark"
         >
-          Mentoria
-        </div>
-        <h1
-          style={{
-            fontFamily: "'Saira Condensed', sans-serif",
-            fontSize: 'clamp(1.8rem, 3vw, 2.8rem)',
-            fontWeight: 900,
-            letterSpacing: '0.02em',
-            lineHeight: 1,
-            color: 'var(--teal)',
-            marginBottom: 12,
-            textTransform: 'uppercase',
-          }}
-        >
-          Something went wrong
-        </h1>
-        <p style={{ fontFamily: "'Saira', sans-serif", color: 'rgba(25,53,62,0.65)', fontSize: '1rem', fontWeight: 300, marginBottom: 28, lineHeight: 1.75 }}>
-          We couldn&apos;t complete this request. You can try again — if the problem continues, contact support.
-        </p>
-        <button type="button" className="btn btn-primary" onClick={() => reset()}>
-          Try again
+          Try Again
         </button>
+        <Link
+          href="/dashboard"
+          className="rounded-sm border border-white/20 px-7 py-3 font-saira text-xs font-bold uppercase tracking-widest text-white/60 transition-all hover:border-gold hover:text-gold"
+        >
+          Dashboard
+        </Link>
       </div>
     </div>
   );

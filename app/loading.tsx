@@ -1,29 +1,8 @@
 export default function Loading() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 20,
-        background: 'var(--light)',
-      }}
-    >
-      <div className="app-route-spinner" aria-hidden />
-      <p
-        style={{
-          fontSize: '0.72rem',
-          fontWeight: 700,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--teal)',
-          opacity: 0.75,
-        }}
-      >
-        Loading
-      </p>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-light">
+      <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-teal/10 border-t-gold" />
+      <p className="font-saira text-xs font-bold uppercase tracking-widest text-gold">Loading</p>
     </div>
   );
 }

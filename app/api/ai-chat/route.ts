@@ -1,4 +1,5 @@
 import { requireUserForApi } from '@/lib/server/auth';
+import { LIMITS, sanitizeText } from '@/lib/server/api-input';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SYSTEM_PROMPT = `You are the Mentoria AI Assistant — an expert advisor embedded inside the Mentoria platform, a premium advisory platform focused on sports, investment, and education in the Balkans and beyond.
@@ -64,20 +65,68 @@ Personality and tone:
 
 Always remember: You are part of the Mentoria platform. When relevant, reference that Mentoria offers courses, materials, quizzes, and mentor sessions that can help the user go deeper on any topic.`;
 
+type ChatMessage = { role: 'user' | 'assistant'; content: string };
+
 export async function POST(req: NextRequest) {
   const auth = await requireUserForApi();
   if (auth.unauthorized) return auth.unauthorized;
 
+  let raw: unknown;
   try {
-    const { messages, userRole, userName } = await req.json();
+    raw = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 });
+  }
+
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+    return NextResponse.json({ error: 'Request body must be a non-empty JSON object' }, { status: 400 });
+  }
+
+  try {
+    const body = raw as Record<string, unknown>;
+    const messagesRaw = body.messages;
+    if (!Array.isArray(messagesRaw) || messagesRaw.length === 0) {
+      return NextResponse.json({ error: 'messages must be a non-empty array' }, { status: 400 });
+    }
+
+    const messages: ChatMessage[] = [];
+    for (const m of messagesRaw) {
+      if (m === null || typeof m !== 'object' || Array.isArray(m)) {
+        return NextResponse.json({ error: 'Each message must be an object' }, { status: 400 });
+      }
+      const msg = m as Record<string, unknown>;
+      const role = msg.role;
+      if (role !== 'user' && role !== 'assistant') {
+        return NextResponse.json({ error: 'Each message must have role "user" or "assistant"' }, { status: 400 });
+      }
+      const content = typeof msg.content === 'string' ? msg.content : '';
+      if (!content.trim()) {
+        return NextResponse.json({ error: 'Each message must have non-empty content' }, { status: 400 });
+      }
+      const safe = sanitizeText(content, LIMITS.message);
+      if (!safe) {
+        return NextResponse.json({ error: 'Message content is invalid after sanitisation' }, { status: 400 });
+      }
+      messages.push({ role, content: safe });
+    }
+
+    const userName = sanitizeText(
+      typeof body.userName === 'string' ? body.userName : '',
+      LIMITS.shortLabel,
+    );
+    const userRole = sanitizeText(
+      typeof body.userRole === 'string' ? body.userRole : '',
+      LIMITS.shortLabel,
+    );
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
 
     const systemWithContext = `${SYSTEM_PROMPT}
 
 Current user context:
-- Name: ${userName ?? 'Member'}
-- Role: ${userRole ?? 'user'}
+- Name: ${userName || 'Member'}
+- Role: ${userRole || 'user'}
 - Platform: Mentoria Members Portal`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -91,7 +140,7 @@ Current user context:
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 1024,
         system: systemWithContext,
-        messages: messages.map((m: any) => ({
+        messages: messages.map((m) => ({
           role: m.role,
           content: m.content,
         })),
@@ -104,19 +153,21 @@ Current user context:
       throw new Error(`Claude API error: ${err}`);
     }
 
-    // Stream the response
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         const reader = response.body?.getReader();
-        if (!reader) { controller.close(); return; }
+        if (!reader) {
+          controller.close();
+          return;
+        }
         const decoder = new TextDecoder();
         try {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             const chunk = decoder.decode(value);
-            const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+            const lines = chunk.split('\n').filter((l) => l.startsWith('data: '));
             for (const line of lines) {
               const data = line.slice(6);
               if (data === '[DONE]') continue;
@@ -125,7 +176,9 @@ Current user context:
                 if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
                   controller.enqueue(encoder.encode(parsed.delta.text));
                 }
-              } catch {}
+              } catch {
+                /* ignore malformed SSE JSON lines */
+              }
             }
           }
         } finally {

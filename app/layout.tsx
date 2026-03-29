@@ -1,24 +1,31 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Saira, Saira_Condensed } from 'next/font/google';
 import AppToaster from '@/components/AppToaster';
+
+const saira = Saira({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-saira',
+  display: 'swap',
+});
+
+const sairaCondensed = Saira_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '900'],
+  variable: '--font-saira-condensed',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Mentoria — Members Platform',
-  description: 'Mentoria advisory platform',
+  description: 'Premium advisory platform for sports, investment and education professionals',
   icons: { icon: '/mentoria-logo.svg' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700;800;900&family=Saira+Condensed:wght@400;600;700;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${saira.variable} ${sairaCondensed.variable}`}>
       <body>
         {children}
         <AppToaster />

@@ -6,7 +6,7 @@ function IconBook() {
       width={20}
       height={20}
       fill="none"
-      className="text-mentoria-gold"
+      className="text-gold"
       stroke="currentColor"
       strokeWidth={2.2}
       strokeLinecap="round"
@@ -33,7 +33,7 @@ function IconQuiz() {
       width={20}
       height={20}
       fill="none"
-      className="text-mentoria-gold"
+      className="text-gold"
       stroke="currentColor"
       strokeWidth={2.2}
       strokeLinecap="round"
@@ -54,7 +54,7 @@ function IconMaterials() {
       width={20}
       height={20}
       fill="none"
-      className="text-mentoria-gold"
+      className="text-gold"
       stroke="currentColor"
       strokeWidth={2.2}
       strokeLinecap="round"
@@ -76,7 +76,7 @@ function IconStar() {
       width={20}
       height={20}
       fill="none"
-      className="text-mentoria-gold"
+      className="text-gold"
       stroke="currentColor"
       strokeWidth={2.2}
       strokeLinecap="round"
@@ -148,20 +148,20 @@ export default function AuthMarketingColumn() {
   return (
     <div className="relative z-[1] flex flex-col justify-center px-[6%] py-12 pb-20 pt-12 lg:min-h-[calc(100vh-72px)] lg:py-20">
       <div>
-        <p className="mb-5 flex items-center gap-2.5 font-sans text-[0.72rem] font-bold uppercase tracking-[0.22em] text-mentoria-gold">
-          <span className="h-0.5 w-8 bg-mentoria-gold" aria-hidden />
+        <p className="mb-5 flex items-center gap-2.5 font-sans text-[0.72rem] font-bold uppercase tracking-[0.22em] text-gold">
+          <span className="h-0.5 w-8 bg-gold" aria-hidden />
           Members Portal
         </p>
         <h1 className="font-condensed text-[clamp(2.6rem,4vw,4rem)] font-black uppercase leading-[0.95] tracking-[-0.01em] text-white">
           Access the
           <br />
-          <span className="text-mentoria-gold">Mentoria</span>
+          <span className="text-gold">Mentoria</span>
           <br />
           Members
           <br />
           Portal
         </h1>
-        <p className="mb-11 mt-5 max-w-[400px] font-sans text-[0.9rem] font-light leading-[1.75] text-mentoria-light">
+        <p className="mb-11 mt-5 max-w-[400px] font-sans text-[0.9rem] font-light leading-[1.75] text-light">
           Unlock exclusive knowledge, premium materials, expert-designed quizzes, and curated subscriber-only insights
           through your Mentoria membership.
         </p>
@@ -179,7 +179,7 @@ export default function AuthMarketingColumn() {
                 <strong className="mb-0.5 block font-sans text-[0.8rem] font-bold uppercase tracking-[0.05em] text-white">
                   {title}
                 </strong>
-                <span className="font-sans text-[0.78rem] font-light leading-normal text-mentoria-light">
+                <span className="font-sans text-[0.78rem] font-light leading-normal text-light">
                   {body}
                 </span>
               </div>
@@ -192,7 +192,7 @@ export default function AuthMarketingColumn() {
         {TRUST.map(({ label, Icon }, idx) => (
           <div key={label} className="flex items-center gap-4">
             {idx > 0 ? <span className="h-3 w-px shrink-0 bg-[rgba(255,255,255,0.1)]" aria-hidden /> : null}
-            <div className="flex items-center gap-1.5 font-sans text-[0.63rem] font-semibold uppercase tracking-[0.1em] text-mentoria-light/70">
+            <div className="flex items-center gap-1.5 font-sans text-[0.63rem] font-semibold uppercase tracking-[0.1em] text-light/70">
               <Icon />
               {label}
             </div>

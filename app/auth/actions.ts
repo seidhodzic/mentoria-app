@@ -10,11 +10,11 @@ import {
   verifyCheckoutUser,
   type SubscriptionPlanKey,
 } from '@/lib/payments';
-import { allowRateLimit } from '@/lib/server/rate-limit-signup';
+import { checkRateLimitBucket, checkSignupRateLimit } from '@/lib/server/rate-limit-signup';
 import { ensureUserProfile } from '@/lib/server/ensure-user-profile';
 import { deleteSupabaseAuthCookieChunks } from '@/lib/supabase/auth-cookie';
 import { createServiceRoleClient } from '@/lib/supabase/admin';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase-server';
 
 /** Reject auth.users rows older than this when verifying signup notifications. */
 const SIGNUP_MAX_AGE_MS = 2 * 60 * 60 * 1000;
@@ -101,10 +101,12 @@ export async function notifyAdminOfSignup(input: {
   const forwarded = h.get('x-forwarded-for');
   const ip = (forwarded?.split(',')[0]?.trim() || h.get('x-real-ip') || 'unknown').slice(0, 128);
 
-  if (!allowRateLimit(`signup-notify-ip:${ip}`, 20, 60 * 60 * 1000)) {
+  const ipRl = await checkRateLimitBucket(`signup-notify-ip:${ip}`, 20, 60 * 60 * 1000);
+  if (!ipRl.allowed) {
     return { ok: false, error: 'Too many requests' };
   }
-  if (!allowRateLimit(`signup-notify-email:${email}`, 3, 24 * 60 * 60 * 1000)) {
+  const emailRl = await checkSignupRateLimit(email);
+  if (!emailRl.allowed) {
     return { ok: false, error: 'Too many requests' };
   }
 

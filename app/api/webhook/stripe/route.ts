@@ -1,13 +1,15 @@
-import { NextResponse } from 'next/server';
-import type Stripe from 'stripe';
-import { env } from '@/lib/env';
-import { getStripe } from '@/lib/stripe';
-import { createServiceRoleClient } from '@/lib/supabase/admin';
-import type { Database } from '@/types/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { stripe, Stripe } from '@/lib/payments/stripe-provider';
+import { createClient } from '@/lib/supabase/admin';
 
-type SubStatus = Database['public']['Tables']['subscriptions']['Row']['status'];
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-function mapStripeSubscriptionStatus(s: Stripe.Subscription.Status): SubStatus {
+function metadataUserId(meta: Stripe.Metadata | null | undefined): string | undefined {
+  return meta?.userId ?? meta?.supabase_user_id;
+}
+
+function mapStripeSubscriptionStatus(s: Stripe.Subscription.Status): string {
   switch (s) {
     case 'trialing':
       return 'trialing';
@@ -16,7 +18,6 @@ function mapStripeSubscriptionStatus(s: Stripe.Subscription.Status): SubStatus {
     case 'past_due':
       return 'past_due';
     case 'canceled':
-      return 'cancelled';
     case 'unpaid':
       return 'cancelled';
     default:
@@ -24,127 +25,133 @@ function mapStripeSubscriptionStatus(s: Stripe.Subscription.Status): SubStatus {
   }
 }
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export async function POST(req: NextRequest) {
+  // Read raw body — required for Stripe webhook signature verification
+  // No config export needed in App Router; req.text() reads raw body natively
+  const body = await req.text();
+  const sig = req.headers.get('stripe-signature');
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-/**
- * Stripe webhook — `checkout.session.completed` sets `profiles.is_active` + `status: active` on successful payment.
- * Subscription rows mirror Stripe for reporting; member UI gating uses the profile flags for subscription signups.
- * Configure: Dashboard → Webhooks → `https://<your-domain>/api/webhook/stripe`
- */
-export async function POST(request: Request) {
-  if (!env.stripeWebhookSecret) {
-    return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET not configured' }, { status: 500 });
-  }
-
-  const rawBody = await request.text();
-  const sig = request.headers.get('stripe-signature');
-  if (!sig) {
-    return NextResponse.json({ error: 'Missing stripe-signature' }, { status: 400 });
+  if (!sig || !webhookSecret) {
+    console.error('Webhook: missing signature or secret');
+    return NextResponse.json({ error: 'Missing signature or secret' }, { status: 400 });
   }
 
   let event: Stripe.Event;
   try {
-    event = getStripe().webhooks.constructEvent(rawBody, sig, env.stripeWebhookSecret);
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
-    console.error('Stripe webhook verify:', err);
+    console.error('Webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const userId = session.metadata?.supabase_user_id;
-    const customer = session.customer;
-    const customerId = typeof customer === 'string' ? customer : customer?.id ?? null;
-    const subscriptionRef = session.subscription;
-    const subscriptionId =
-      typeof subscriptionRef === 'string' ? subscriptionRef : subscriptionRef?.id ?? null;
+  // Use admin client to bypass RLS — webhook runs server-side with no user session
+  const supabase = createClient();
 
-    if (userId && customerId) {
-      try {
-        const admin = createServiceRoleClient();
-        const { error } = await admin
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        // userId is always set in metadata by our checkout route (3.1 above)
+        const userId = session.metadata?.userId;
+        if (!userId) {
+          console.error('Webhook checkout.session.completed: no userId in metadata');
+          break;
+        }
+
+        const isSubscription = session.mode === 'subscription';
+        const isOneTime = session.mode === 'payment';
+
+        await supabase.from('subscriptions').upsert(
+          {
+            user_id: userId,
+            stripe_customer_id: typeof session.customer === 'string' ? session.customer : null,
+            stripe_subscription_id: isSubscription ? (session.subscription as string) : null,
+            status: 'active',
+            plan: isOneTime ? 'one_time' : 'subscription',
+            current_period_end: null,
+            created_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' },
+        );
+
+        await supabase
           .from('profiles')
           .update({
             is_active: true,
             status: 'active',
-            stripe_customer_id: customerId,
-            updated_at: new Date().toISOString(),
+            signup_access_type: isOneTime ? 'one_time' : 'subscription',
           })
           .eq('id', userId);
 
-        if (error) {
-          console.error('Webhook profiles update:', error);
-          return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+        console.log(`Checkout completed for user ${userId}`);
+        break;
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as Stripe.Subscription;
+        // userId is in subscription metadata (set via subscription_data.metadata in checkout)
+        const userId = sub.metadata?.userId;
+        if (!userId) {
+          console.warn('Webhook subscription.updated: no userId in subscription metadata');
+          break;
         }
 
-        if (subscriptionId) {
-          const stripe = getStripe();
-          const sub = await stripe.subscriptions.retrieve(subscriptionId);
-          const status = mapStripeSubscriptionStatus(sub.status);
-          const periodEnd = sub.current_period_end
-            ? new Date(sub.current_period_end * 1000).toISOString()
-            : null;
+        const status = sub.status;
+        const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+        const isActive = status === 'active' || status === 'trialing';
 
-          const row = {
-            user_id: userId,
-            plan: 'starter',
-            stripe_customer_id: customerId,
-            stripe_subscription_id: sub.id,
-            status,
-            current_period_end: periodEnd,
-          };
+        await supabase
+          .from('subscriptions')
+          .update({ status, current_period_end: periodEnd })
+          .eq('stripe_subscription_id', sub.id);
 
-          const { data: existing } = await admin
+        await supabase.from('profiles').update({ is_active: isActive }).eq('id', userId);
+
+        console.log(`Subscription updated for user ${userId}: ${status}`);
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription;
+        const userId = metadataUserId(sub.metadata);
+        if (!userId) {
+          console.warn('Webhook subscription.deleted: no userId in metadata');
+          break;
+        }
+
+        await supabase
+          .from('subscriptions')
+          .update({ status: 'cancelled' })
+          .eq('stripe_subscription_id', sub.id);
+
+        await supabase.from('profiles').update({ is_active: false }).eq('id', userId);
+
+        console.log(`Subscription cancelled for user ${userId}`);
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        if (invoice.subscription) {
+          await supabase
             .from('subscriptions')
-            .select('id')
-            .eq('stripe_subscription_id', sub.id)
-            .maybeSingle();
-
-          const { error: subErr } = existing
-            ? await admin.from('subscriptions').update(row).eq('id', existing.id)
-            : await admin.from('subscriptions').insert(row);
-
-          if (subErr) {
-            console.error('Webhook subscriptions upsert:', subErr);
-            return NextResponse.json({ error: 'Subscription row failed' }, { status: 500 });
-          }
+            .update({ status: 'past_due' })
+            .eq('stripe_subscription_id', invoice.subscription as string);
+          console.log(`Payment failed for subscription ${invoice.subscription}`);
         }
-      } catch (e) {
-        console.error(e);
-        return NextResponse.json({ error: 'Server error' }, { status: 500 });
+        break;
       }
+
+      default:
+        // Ignore unhandled events — do not log noise for every event type
+        break;
     }
+  } catch (err) {
+    // Log the error but always return 200 so Stripe does not retry
+    console.error(`Webhook handler error for ${event.type}:`, err);
   }
 
-  if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
-    const sub = event.data.object as Stripe.Subscription;
-    const status =
-      event.type === 'customer.subscription.deleted'
-        ? ('cancelled' as const)
-        : mapStripeSubscriptionStatus(sub.status);
-    const periodEnd =
-      event.type === 'customer.subscription.deleted'
-        ? null
-        : sub.current_period_end
-          ? new Date(sub.current_period_end * 1000).toISOString()
-          : null;
-    try {
-      const admin = createServiceRoleClient();
-      const { error } = await admin
-        .from('subscriptions')
-        .update({
-          status,
-          current_period_end: periodEnd,
-        })
-        .eq('stripe_subscription_id', sub.id);
-      if (error) {
-        console.error('Webhook subscription sync:', error);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
+  // Always return 200 to Stripe
   return NextResponse.json({ received: true });
 }

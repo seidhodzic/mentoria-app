@@ -50,6 +50,7 @@ export default async function UserSessionsPage() {
     <UserSessionsClient
       userId={user.id}
       userName={profile?.full_name ?? ''}
+      userEmail={profile?.email ?? ''}
       mySessions={mySessions ?? []}
       groupSessions={groupSessions ?? []}
       myRequests={myRequests ?? []}

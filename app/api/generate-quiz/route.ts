@@ -1,35 +1,54 @@
 import { requireUserForApi } from '@/lib/server/auth';
+import { LIMITS, sanitizeText } from '@/lib/server/api-input';
 import { NextRequest, NextResponse } from 'next/server';
 
 const FIFA_TOPICS = [
-  "FIFA Agent Regulations and licensing requirements",
-  "FIFA Football Agent Examination rules and procedures",
-  "Representation contracts between agents and players",
-  "Service agreements between agents and clubs",
-  "FIFA Football Agent fees and commission rules",
-  "Transfer windows and international transfer certificates",
-  "FIFA Transfer Matching System (TMS)",
-  "Minor player transfer regulations",
-  "Training compensation and solidarity mechanism",
-  "FIFA Dispute Resolution Chamber",
-  "CAS Court of Arbitration for Sport procedures",
-  "Player registration and eligibility rules",
-  "Contract stability and unilateral termination",
-  "Protected period in player contracts",
-  "Just cause and sporting just cause for termination",
-  "FIFA Clearing House regulations",
-  "Conflicts of interest for football agents",
-  "Dual representation rules",
-  "FIFA Code of Ethics for agents",
-  "Image rights in football contracts",
+  'FIFA Agent Regulations and licensing requirements',
+  'FIFA Football Agent Examination rules and procedures',
+  'Representation contracts between agents and players',
+  'Service agreements between agents and clubs',
+  'FIFA Football Agent fees and commission rules',
+  'Transfer windows and international transfer certificates',
+  'FIFA Transfer Matching System (TMS)',
+  'Minor player transfer regulations',
+  'Training compensation and solidarity mechanism',
+  'FIFA Dispute Resolution Chamber',
+  'CAS Court of Arbitration for Sport procedures',
+  'Player registration and eligibility rules',
+  'Contract stability and unilateral termination',
+  'Protected period in player contracts',
+  'Just cause and sporting just cause for termination',
+  'FIFA Clearing House regulations',
+  'Conflicts of interest for football agents',
+  'Dual representation rules',
+  'FIFA Code of Ethics for agents',
+  'Image rights in football contracts',
 ];
 
 export async function POST(req: NextRequest) {
   const auth = await requireUserForApi();
   if (auth.unauthorized) return auth.unauthorized;
 
+  let raw: unknown;
   try {
-    const { topic, count = 10 } = await req.json();
+    raw = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 });
+  }
+
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+    return NextResponse.json({ error: 'Request body must be a non-empty JSON object' }, { status: 400 });
+  }
+
+  try {
+    const body = raw as Record<string, unknown>;
+    const topicRaw = body.topic != null ? String(body.topic) : '';
+    const topic = topicRaw.trim() ? sanitizeText(topicRaw, LIMITS.topic) : '';
+    const countRaw = body.count;
+    let count = typeof countRaw === 'number' && Number.isFinite(countRaw) ? Math.floor(countRaw) : 10;
+    if (count < 1) count = 1;
+    if (count > 30) count = 30;
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
 
@@ -37,11 +56,13 @@ export async function POST(req: NextRequest) {
       ? [topic]
       : FIFA_TOPICS.sort(() => Math.random() - 0.5).slice(0, 4);
 
+    const topicsLine = selectedTopics.map((t) => sanitizeText(t, LIMITS.topic)).join(', ');
+
     const prompt = `You are an expert on FIFA Football Agent Regulations and the FIFA Football Agent Examination.
 
 Generate exactly ${count} multiple choice questions for FIFA Agent Exam preparation.
 
-Topics to cover: ${selectedTopics.join(', ')}
+Topics to cover: ${topicsLine}
 
 Requirements:
 - Each question must be factually accurate based on current FIFA regulations

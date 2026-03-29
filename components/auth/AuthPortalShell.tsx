@@ -22,7 +22,7 @@ export default function AuthPortalShell({ children }: Props) {
           }}
         />
         <div
-          className="absolute bottom-0 right-0 z-0 h-[160px] w-[320px] bg-mentoria-gold opacity-95 max-lg:h-[100px] max-lg:w-[200px]"
+          className="absolute bottom-0 right-0 z-0 h-[160px] w-[320px] bg-gold opacity-95 max-lg:h-[100px] max-lg:w-[200px]"
           style={{ clipPath: 'polygon(100% 0, 100% 100%, 0 100%)' }}
         />
       </div>

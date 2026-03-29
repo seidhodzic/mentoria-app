@@ -185,7 +185,7 @@ This lesson is free for everyone.
   console.log('Course ID:', course.id);
   console.log('');
   console.log('Open locally (with npm run dev):');
-  console.log(`  http://localhost:3000${path}`);
+  console.log(`  ${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}${path}`);
   console.log('');
 }
 

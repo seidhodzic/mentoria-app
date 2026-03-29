@@ -2,52 +2,30 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './features/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './features/**/*.{ts,tsx}',
   ],
   theme: {
     extend: {
-      colors: {
-        mentoria: {
-          teal: '#19353E',
-          'teal-mid': '#1e4552',
-          'teal-light': '#2a5c6e',
-          /** Primary brand gold — single source for UI, text, and luxury accents */
-          gold: '#F7BC15',
-          'gold-dark': '#d9a410',
-          /** Alias of `gold` for legacy `mentoria-luxury` classes */
-          luxury: '#F7BC15',
-          navy: '#0d2229',
-          light: '#EFEFEF',
-          muted: '#7a9aa5',
-          footer: '#0d2229',
-        },
-      },
       fontFamily: {
-        /** Body, UI, labels, buttons */
-        sans: ["'Saira'", 'sans-serif'],
-        /** Headings, titles, large numbers, logo wordmark only */
-        condensed: ["'Saira Condensed'", 'sans-serif'],
+        sans: ['var(--font-saira)', 'sans-serif'],
+        condensed: ['var(--font-saira-condensed)', 'sans-serif'],
+        saira: ['var(--font-saira)', 'sans-serif'],
+        'saira-condensed': ['var(--font-saira-condensed)', 'sans-serif'],
       },
-      typography: {
-        DEFAULT: {
-          css: {
-            maxWidth: 'none',
-            '--tw-prose-body': 'rgba(25, 53, 62, 0.88)',
-            '--tw-prose-headings': '#19353E',
-            '--tw-prose-links': '#F7BC15',
-            '--tw-prose-bold': '#19353E',
-            '--tw-prose-quotes': 'rgba(25, 53, 62, 0.75)',
-          },
-        },
+      colors: {
+        gold: '#F7BC15',
+        'gold-dark': '#d9a410',
+        teal: '#19353E',
+        'teal-mid': '#1e4552',
+        'teal-light': '#2a5c6e',
+        light: '#EFEFEF',
+        muted: '#7a9aa5',
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
-  corePlugins: {
-    preflight: false,
-  },
+  plugins: [],
 };
 
 export default config;

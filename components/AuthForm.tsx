@@ -20,11 +20,11 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 function fieldClass(extra = '') {
-  return `w-full rounded-[2px] border-[1.5px] border-transparent bg-white px-3.5 py-[11px] font-sans text-[0.9rem] font-normal text-mentoria-teal outline-none transition-all placeholder:text-[rgba(25,53,62,0.28)] focus:border-mentoria-gold focus:bg-white focus:shadow-[0_0_0_3px_rgba(247,188,21,0.14)] ${extra}`;
+  return `w-full rounded-[2px] border-[1.5px] border-transparent bg-white px-3.5 py-[11px] font-sans text-[0.9rem] font-normal text-teal outline-none transition-all placeholder:text-[rgba(25,53,62,0.28)] focus:border-gold focus:bg-white focus:shadow-[0_0_0_3px_rgba(247,188,21,0.14)] ${extra}`;
 }
 
 function labelClass() {
-  return 'mb-1.5 block font-sans text-[0.65rem] font-bold uppercase tracking-[0.14em] text-mentoria-teal opacity-[0.55]';
+  return 'mb-1.5 block font-sans text-[0.65rem] font-bold uppercase tracking-[0.14em] text-teal opacity-[0.55]';
 }
 
 export default function AuthForm() {
@@ -176,16 +176,16 @@ export default function AuthForm() {
   const tabInteractive =
     'transition-all duration-300 ease-out hover:scale-[1.05] hover:brightness-[1.06] hover:shadow-[0_4px_24px_rgba(247,188,21,0.45)] active:scale-[0.98] active:brightness-95';
   const tabActive =
-    `flex-1 rounded-md bg-mentoria-gold py-[9px] text-center font-sans text-[0.78rem] font-bold uppercase tracking-[0.1em] text-mentoria-teal ${tabInteractive}`;
+    `flex-1 rounded-md bg-gold py-[9px] text-center font-sans text-[0.78rem] font-bold uppercase tracking-[0.1em] text-teal ${tabInteractive}`;
   const tabIdleSignIn =
-    `flex-1 rounded-md border-2 border-mentoria-gold bg-transparent py-[9px] text-center font-sans text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-mentoria-teal hover:bg-mentoria-gold hover:text-[#19353E] ${tabInteractive}`;
+    `flex-1 rounded-md border-2 border-gold bg-transparent py-[9px] text-center font-sans text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-teal hover:bg-gold hover:text-[#19353E] ${tabInteractive}`;
   const tabIdleJoin =
-    `flex-1 rounded-md border-2 border-mentoria-gold bg-transparent py-[9px] text-center font-sans text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-mentoria-teal hover:bg-mentoria-gold hover:text-[#19353E] ${tabInteractive}`;
+    `flex-1 rounded-md border-2 border-gold bg-transparent py-[9px] text-center font-sans text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-teal hover:bg-gold hover:text-[#19353E] ${tabInteractive}`;
 
   return (
     <div className="mx-auto w-full max-w-[460px] px-1 sm:px-0">
       <div className="overflow-hidden rounded-[3px] border-b-4 border-b-[rgba(0,0,0,0.15)] bg-[#EFEFEF] shadow-[0_20px_50px_rgba(0,0,0,0.3),_0_10px_20px_rgba(0,0,0,0.1)]">
-        <div className="h-[3px] bg-gradient-to-r from-mentoria-gold via-mentoria-gold-dark to-transparent" />
+        <div className="h-[3px] bg-gradient-to-r from-gold via-gold-dark to-transparent" />
         <div className="px-[38px] pb-8 pt-7 max-sm:px-6 max-sm:pb-6 max-sm:pt-6">
           {/* Tabs live inside the card (marketing `login.html`) — avoids duplicate nav floating on navy */}
           {!forgotMode && !isRegister && (
@@ -211,11 +211,11 @@ export default function AuthForm() {
 
           {!isRegister && !forgotMode && (
             <>
-              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-mentoria-gold">
-                <span className="h-0.5 w-[18px] bg-mentoria-gold" aria-hidden />
+              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-gold">
+                <span className="h-0.5 w-[18px] bg-gold" aria-hidden />
                 Member Access
               </p>
-              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-mentoria-teal">
+              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-teal">
                 Sign In
               </h2>
               <p className="mt-2 font-sans text-[0.8rem] font-light leading-[1.75] text-[rgba(25,53,62,0.55)]">
@@ -226,11 +226,11 @@ export default function AuthForm() {
 
           {!isRegister && forgotMode && (
             <>
-              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-mentoria-gold">
-                <span className="h-0.5 w-[18px] bg-mentoria-gold" aria-hidden />
+              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-gold">
+                <span className="h-0.5 w-[18px] bg-gold" aria-hidden />
                 Password Reset
               </p>
-              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-mentoria-teal">
+              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-teal">
                 Reset Password
               </h2>
               <p className="mt-2 font-sans text-[0.8rem] font-light leading-[1.75] text-[rgba(25,53,62,0.55)]">
@@ -241,11 +241,11 @@ export default function AuthForm() {
 
           {isRegister && (
             <>
-              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-mentoria-gold">
-                <span className="h-0.5 w-[18px] bg-mentoria-gold" aria-hidden />
+              <p className="mb-2 flex items-center gap-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.22em] text-gold">
+                <span className="h-0.5 w-[18px] bg-gold" aria-hidden />
                 New Membership
               </p>
-              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-mentoria-teal">
+              <h2 className="font-condensed text-[1.6rem] font-black uppercase leading-none tracking-[0.02em] text-teal">
                 Join Mentoria
               </h2>
               <p className="mt-2 font-sans text-[0.8rem] font-light leading-[1.75] text-[rgba(25,53,62,0.55)]">
@@ -338,13 +338,13 @@ export default function AuthForm() {
                       type="button"
                       onClick={() => setAccessType('subscription')}
                       className={`flex flex-col items-center px-2.5 py-3 text-center transition-all ${
-                        accessType === 'subscription' ? 'bg-mentoria-teal' : 'bg-white'
+                        accessType === 'subscription' ? 'bg-teal' : 'bg-white'
                       }`}
                     >
                       <span
                         className={`mb-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${
                           accessType === 'subscription'
-                            ? 'text-mentoria-gold'
+                            ? 'text-gold'
                             : 'text-[rgba(25,53,62,0.6)]'
                         }`}
                       >
@@ -364,13 +364,13 @@ export default function AuthForm() {
                       type="button"
                       onClick={() => setAccessType('one_time')}
                       className={`flex flex-col items-center px-2.5 py-3 text-center transition-all ${
-                        accessType === 'one_time' ? 'bg-mentoria-teal' : 'bg-white'
+                        accessType === 'one_time' ? 'bg-teal' : 'bg-white'
                       }`}
                     >
                       <span
                         className={`mb-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${
                           accessType === 'one_time'
-                            ? 'text-mentoria-gold'
+                            ? 'text-gold'
                             : 'text-[rgba(25,53,62,0.6)]'
                         }`}
                       >
@@ -391,14 +391,14 @@ export default function AuthForm() {
 
                 {accessType === 'subscription' && (
                   <div className="space-y-3">
-                    <div className="flex items-start gap-2.5 rounded-[0_2px_2px_0] border-l-[3px] border-mentoria-gold bg-[rgba(247,188,21,0.08)] px-3.5 py-2.5 font-sans text-[0.76rem] font-normal leading-normal text-[rgba(25,53,62,0.65)]">
+                    <div className="flex items-start gap-2.5 rounded-[0_2px_2px_0] border-l-[3px] border-gold bg-[rgba(247,188,21,0.08)] px-3.5 py-2.5 font-sans text-[0.76rem] font-normal leading-normal text-[rgba(25,53,62,0.65)]">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         width={16}
                         height={16}
                         fill="none"
-                        className="mt-0.5 shrink-0 text-mentoria-gold"
+                        className="mt-0.5 shrink-0 text-gold"
                         stroke="currentColor"
                         strokeWidth={1.6}
                         strokeLinecap="round"
@@ -408,7 +408,7 @@ export default function AuthForm() {
                         <path d="M10 2L12.5 7.5L18 8L14 12L15.5 18L10 15L4.5 18L6 12L2 8L7.5 7.5Z" />
                       </svg>
                       <span>
-                        <strong className="font-bold text-mentoria-teal">Unlock full platform access</strong> — premium
+                        <strong className="font-bold text-teal">Unlock full platform access</strong> — premium
                         membership, cancel anytime.
                       </span>
                     </div>
@@ -417,11 +417,11 @@ export default function AuthForm() {
                       <button
                         type="button"
                         onClick={() => setPlanModalOpen(true)}
-                        className="flex w-full items-center justify-between rounded-[2px] border-[1.5px] border-[rgba(25,53,62,0.15)] bg-white px-4 py-3 text-left font-sans text-[0.75rem] font-bold uppercase tracking-[0.1em] text-mentoria-teal transition-colors hover:border-mentoria-gold hover:bg-[rgba(247,188,21,0.06)]"
+                        className="flex w-full items-center justify-between rounded-[2px] border-[1.5px] border-[rgba(25,53,62,0.15)] bg-white px-4 py-3 text-left font-sans text-[0.75rem] font-bold uppercase tracking-[0.1em] text-teal transition-colors hover:border-gold hover:bg-[rgba(247,188,21,0.06)]"
                       >
                         <span>
                           Selected:{' '}
-                          <span className="text-mentoria-gold-dark">{selectedPlanLabel}</span>
+                          <span className="text-gold-dark">{selectedPlanLabel}</span>
                         </span>
                         <svg
                           viewBox="0 0 16 16"
@@ -431,7 +431,7 @@ export default function AuthForm() {
                           stroke="currentColor"
                           strokeWidth={1.5}
                           strokeLinecap="round"
-                          className="shrink-0 text-mentoria-teal"
+                          className="shrink-0 text-teal"
                           aria-hidden
                         >
                           <path d="M3 6L8 11L13 6" />
@@ -457,14 +457,14 @@ export default function AuthForm() {
                           htmlFor={`svc-${p.key}`}
                           className={`flex cursor-pointer items-center justify-between gap-3 rounded-[2px] border-[1.5px] px-3.5 py-3 transition-colors ${
                             oneTimeKey === p.key
-                              ? 'border-mentoria-gold bg-[rgba(247,188,21,0.07)]'
+                              ? 'border-gold bg-[rgba(247,188,21,0.07)]'
                               : 'border-[rgba(25,53,62,0.1)] bg-white hover:border-[rgba(25,53,62,0.25)]'
                           }`}
                         >
                           <div className="min-w-0 flex-1">
                             <div
                               className={`font-sans text-[0.75rem] font-bold uppercase tracking-[0.04em] ${
-                                oneTimeKey === p.key ? 'text-mentoria-gold-dark' : 'text-mentoria-teal'
+                                oneTimeKey === p.key ? 'text-gold-dark' : 'text-teal'
                               }`}
                             >
                               {p.title}
@@ -475,7 +475,7 @@ export default function AuthForm() {
                           </div>
                           <div
                             className={`shrink-0 font-condensed text-[1.1rem] font-black whitespace-nowrap ${
-                              oneTimeKey === p.key ? 'text-mentoria-gold-dark' : 'text-mentoria-teal'
+                              oneTimeKey === p.key ? 'text-gold-dark' : 'text-teal'
                             }`}
                           >
                             {p.price}
@@ -527,7 +527,7 @@ export default function AuthForm() {
             {!isRegister && !forgotMode && (
               <div className="mb-1 flex items-center justify-between">
                 <label className="flex cursor-pointer items-center gap-2 font-sans text-[0.74rem] font-medium text-[rgba(25,53,62,0.5)]">
-                  <input type="checkbox" name="remember" className="h-3.5 w-3.5 accent-mentoria-teal" />
+                  <input type="checkbox" name="remember" className="h-3.5 w-3.5 accent-teal" />
                   Remember me
                 </label>
                 <button
@@ -537,7 +537,7 @@ export default function AuthForm() {
                     setError(null);
                     setMessage(null);
                   }}
-                  className="border-none bg-transparent font-sans text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-mentoria-gold transition-colors hover:text-[#19353E]"
+                  className="border-none bg-transparent font-sans text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-gold transition-colors hover:text-[#19353E]"
                 >
                   Forgot password?
                 </button>
@@ -547,7 +547,7 @@ export default function AuthForm() {
             <button
               type="submit"
               disabled={loading || redirectingToPayment}
-              className="mt-1 w-full rounded-md border-none bg-mentoria-gold py-[13px] font-sans text-[0.8rem] font-bold uppercase tracking-[0.14em] text-[#19353E] shadow-[0_2px_12px_rgba(247,188,21,0.25)] transition-all duration-300 ease-out hover:scale-[1.05] hover:brightness-[1.06] hover:shadow-[0_6px_28px_rgba(247,188,21,0.5)] active:scale-[0.98] active:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:hover:scale-100 disabled:hover:brightness-100 disabled:hover:shadow-none disabled:active:scale-100"
+              className="mt-1 w-full rounded-md border-none bg-gold py-[13px] font-sans text-[0.8rem] font-bold uppercase tracking-[0.14em] text-[#19353E] shadow-[0_2px_12px_rgba(247,188,21,0.25)] transition-all duration-300 ease-out hover:scale-[1.05] hover:brightness-[1.06] hover:shadow-[0_6px_28px_rgba(247,188,21,0.5)] active:scale-[0.98] active:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:hover:scale-100 disabled:hover:brightness-100 disabled:hover:shadow-none disabled:active:scale-100"
             >
               {redirectingToPayment && isRegister
                 ? 'Redirecting to secure payment…'
@@ -578,7 +578,7 @@ export default function AuthForm() {
                       type="button"
                       disabled
                       title="Coming soon"
-                      className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-[2px] border-[1.5px] border-[rgba(25,53,62,0.1)] bg-mentoria-light py-2 font-sans text-[0.65rem] font-bold uppercase tracking-[0.08em] text-[rgba(25,53,62,0.35)]"
+                      className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-[2px] border-[1.5px] border-[rgba(25,53,62,0.1)] bg-light py-2 font-sans text-[0.65rem] font-bold uppercase tracking-[0.08em] text-[rgba(25,53,62,0.35)]"
                     >
                       {name}
                     </button>
@@ -605,7 +605,7 @@ export default function AuthForm() {
                 Not a member?{' '}
                 <Link
                   href="/register"
-                  className="font-bold text-mentoria-gold underline-offset-2 transition-colors hover:text-[#19353E] hover:underline"
+                  className="font-bold text-gold underline-offset-2 transition-colors hover:text-[#19353E] hover:underline"
                 >
                   Join Mentoria →
                 </Link>
@@ -616,7 +616,7 @@ export default function AuthForm() {
                 Already a member?{' '}
                 <Link
                   href="/login"
-                  className="font-bold text-mentoria-gold underline-offset-2 transition-colors hover:text-[#19353E] hover:underline"
+                  className="font-bold text-gold underline-offset-2 transition-colors hover:text-[#19353E] hover:underline"
                 >
                   Sign in →
                 </Link>
@@ -633,7 +633,7 @@ export default function AuthForm() {
                   setError(null);
                   setMessage(null);
                 }}
-                className="border-none bg-transparent font-sans text-[0.72rem] font-bold text-mentoria-gold hover:text-[#19353E] hover:underline"
+                className="border-none bg-transparent font-sans text-[0.72rem] font-bold text-gold hover:text-[#19353E] hover:underline"
               >
                 ← Back to Sign In
               </button>
