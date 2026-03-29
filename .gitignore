@@ -6,5 +6,6 @@ node_modules/
 .env.local
 .env.local.save
 .env*.local
+*.save
 supabase/.temp/
 *.tsbuildinfo
