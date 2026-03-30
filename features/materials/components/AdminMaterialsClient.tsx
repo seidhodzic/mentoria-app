@@ -47,7 +47,8 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
     try {
       const supabase = createClient();
       const ext = file.name.split('.').pop();
-      const path = `${userId}/${Date.now()}-${file.name}`;
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${userId}/${Date.now()}-${safeName}`;
       const { error: uploadError } = await supabase.storage.from('materials').upload(path, file);
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from('materials').getPublicUrl(path);
@@ -60,6 +61,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
         category,
         is_premium: isPremium,
         owner_id: userId,
+        visibility: 'public',
       }).select().single();
       if (dbError) throw dbError;
       setMaterials(prev => [mat, ...prev]);

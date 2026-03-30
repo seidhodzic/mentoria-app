@@ -10,11 +10,16 @@ export default function SignOutButton() {
     router.refresh();
   }
   return (
-    <button type="button" onClick={handleSignOut} className="btn btn-primary btn-sm dash-sign-out">
-      <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <button
+      type="button"
+      onClick={handleSignOut}
+      className="btn btn-primary btn-sm dash-sign-out"
+      aria-label="Sign out"
+    >
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
         <path d="M13 15l5-5-5-5M18 10H7M7 3H4a1 1 0 00-1 1v12a1 1 0 001 1h3"/>
       </svg>
-      Sign Out
+      <span className="dash-sign-out-text">Sign Out</span>
     </button>
   );
 }

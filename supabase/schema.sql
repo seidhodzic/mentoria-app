@@ -101,6 +101,8 @@ alter table public.materials add column if not exists file_size bigint;
 alter table public.materials add column if not exists category text;
 alter table public.materials add column if not exists is_premium boolean;
 update public.materials set is_premium = coalesce(is_premium, false) where is_premium is null;
+alter table public.materials add column if not exists visibility text not null default 'public';
+update public.materials set visibility = 'public' where visibility is null;
 
 -- Widen visibility check on existing DBs (add 'public'); safe to re-run.
 do $$

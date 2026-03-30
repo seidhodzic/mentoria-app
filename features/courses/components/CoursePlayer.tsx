@@ -319,7 +319,10 @@ export default function CoursePlayer({
   return (
     <div className="dash-layout flex min-h-screen flex-col">
       <DashboardHeader navItems={COURSE_NAV} activeNav="/user/courses">
-        <div className="text-[0.72rem] font-semibold text-[rgba(255,255,255,0.65)]">
+        <div
+          className="truncate text-[0.65rem] font-semibold tabular-nums text-[rgba(255,255,255,0.65)] sm:text-[0.72rem]"
+          title={`${completedCount} of ${sortedLessons.length} lessons · ${pct}%`}
+        >
           {completedCount}/{sortedLessons.length} · {pct}%
         </div>
       </DashboardHeader>

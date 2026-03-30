@@ -52,18 +52,18 @@ p{color:rgba(25,53,62,0.7);font-family:var(--font-saira),sans-serif;font-weight:
 .site-header nav a{font-size:0.78rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.75);text-decoration:none;transition:var(--transition)}
 .site-header nav a:hover{color:var(--gold)}
 /* Dashboard header — aligned with marketing .site-header (luxury institutional bar) */
-.dash-header{position:fixed;top:0;left:0;right:0;z-index:100;height:72px;background:rgba(25,53,62,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(247,188,21,0.15);display:flex;align-items:center;justify-content:center;padding:0 clamp(16px,5%,56px)}
-.dash-header-inner{display:flex;align-items:center;width:100%;max-width:1440px;margin:0 auto;gap:clamp(12px,2.5vw,28px);min-height:72px}
+.dash-header{position:fixed;top:0;left:0;right:0;z-index:100;height:72px;background:rgba(25,53,62,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(247,188,21,0.15);display:flex;align-items:center;justify-content:center;padding:0 clamp(12px,4vw,56px)}
+.dash-header-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1440px;margin:0 auto;gap:clamp(8px,2vw,28px);min-height:72px;min-width:0}
 .dash-header .dash-brand{font-family:var(--font-saira-condensed),sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:0.12em;color:var(--white);text-transform:uppercase;text-decoration:none;flex-shrink:0;line-height:0}
 .dash-header .dash-brand span{color:var(--gold)}
-.dash-header .dash-brand.dash-brand-logo{font-family:inherit;font-size:unset;font-weight:unset;letter-spacing:unset;text-transform:none}
+.dash-header .dash-brand.dash-brand-logo{font-family:inherit;font-size:unset;font-weight:unset;letter-spacing:unset;text-transform:none;flex-shrink:1;min-width:0}
 /* Center nav between logo and actions — same rhythm as index marketing header */
 .dash-nav{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;overflow-x:auto;padding:0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .dash-nav::-webkit-scrollbar{display:none}
 .dash-nav a{font-family:var(--font-saira-condensed),sans-serif;font-size:0.76rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(239,239,239,0.88);text-decoration:none;padding:10px 12px;border-radius:2px;transition:color 0.2s,border-color 0.2s;white-space:nowrap;border-bottom:2px solid transparent;background:transparent}
 .dash-nav a:hover{color:var(--gold);border-bottom-color:var(--gold)}
 .dash-nav a.active{color:var(--gold);border-bottom-color:var(--gold);background:transparent;box-shadow:none}
-.dash-menu-btn{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;margin:0 -6px 0 8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:3px;cursor:pointer;flex-shrink:0;transition:all 0.2s}
+.dash-menu-btn{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:10px;margin:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:3px;cursor:pointer;flex-shrink:0;transition:all 0.2s}
 .dash-menu-btn:hover{background:rgba(255,255,255,0.12);border-color:rgba(247,188,21,0.35)}
 .dash-menu-btn-bar{display:block;height:2px;width:100%;background:var(--gold);border-radius:1px}
 .dash-nav-backdrop{position:fixed;inset:0;background:rgba(13,34,41,0.55);z-index:200;animation:dashFade 0.2s ease}
@@ -83,10 +83,13 @@ p{color:rgba(25,53,62,0.7);font-family:var(--font-saira),sans-serif;font-weight:
 .app-route-spinner{width:48px;height:48px;border:3px solid rgba(247,188,21,0.2);border-top-color:var(--gold);border-radius:50%;animation:appSpin 0.85s linear infinite}
 @keyframes appSpin{to{transform:rotate(360deg)}}
 [data-sonner-toaster]{z-index:1100!important}
-.dash-header-right{display:flex;align-items:center;gap:clamp(8px,1.5vw,14px);flex-shrink:0}
-.dash-user-pill{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;background:transparent;border:1px solid rgba(247,188,21,0.45);border-radius:100px}
+.dash-header-right{display:flex;align-items:center;justify-content:flex-end;gap:clamp(6px,1.2vw,14px);flex-shrink:0}
+.dash-header-slot{display:flex;min-width:0;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap}
+.dash-header-slot .btn{flex-shrink:1;min-width:0}
+.dash-header-slot > *{min-width:0}
+.dash-user-pill{display:flex;align-items:center;gap:6px;max-width:min(160px,38vw);padding:6px 10px 6px 8px;background:transparent;border:1px solid rgba(247,188,21,0.45);border-radius:100px;min-width:0}
 .dash-user-pill .role-badge{font-family:var(--font-saira-condensed),sans-serif;font-size:0.62rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;background:#F7BC15;color:var(--teal);padding:4px 9px;border-radius:6px}
-.dash-user-pill .name{font-family:var(--font-saira-condensed),sans-serif;font-size:0.78rem;font-weight:600;color:rgba(239,239,239,0.95);letter-spacing:0.06em}
+.dash-user-pill .name{font-family:var(--font-saira-condensed),sans-serif;font-size:0.78rem;font-weight:600;color:rgba(239,239,239,0.95);letter-spacing:0.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .container{max-width:1280px;margin:0 auto;padding:0 5%}
 main{padding-top:72px}
 /* Dashboard shell: deep navy frame + off-white paper content */
@@ -185,9 +188,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:var(
   .cards-grid{grid-template-columns:repeat(2,1fr)}
   .dash-nav-desktop{display:none!important}
   .dash-menu-btn{display:inline-flex}
+  .dash-header{padding:0 12px}
+  .dash-header-inner{gap:8px}
+  .dash-header-right{flex:1 1 auto;min-width:0;max-width:100%}
+  .dash-header-slot{flex:1 1 auto}
 }
 /* Mobile — ≤640px */
 @media(max-width:640px){
+  .dash-header{padding:0 10px}
+  .dash-header-inner{gap:6px}
+  .dash-header .dash-sign-out-text{display:none}
+  .dash-header .dash-sign-out{min-width:40px;min-height:40px;justify-content:center;padding-left:12px;padding-right:12px}
   .dash-content{padding:16px}
   .page-header{margin-bottom:20px;padding-bottom:16px}
   .stats-grid{grid-template-columns:1fr}

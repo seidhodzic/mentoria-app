@@ -48,8 +48,9 @@ export default function DashboardHeader({
       : '/user';
 
   const right =
-    children ??
-    (userName ? (
+    children != null && children !== false ? (
+      <div className="dash-header-slot">{children}</div>
+    ) : userName ? (
       <>
         <div className="dash-user-pill">
           {userRole && <span className="role-badge">{userRole}</span>}
@@ -57,7 +58,7 @@ export default function DashboardHeader({
         </div>
         <SignOutButton />
       </>
-    ) : null);
+    ) : null;
 
   return (
     <>
@@ -66,9 +67,12 @@ export default function DashboardHeader({
           <Link
             href={brandHomeHref as any}
             prefetch={false}
-            className="dash-brand dash-brand-logo inline-flex shrink-0 items-center no-underline"
+            className="dash-brand dash-brand-logo inline-flex min-w-0 shrink items-center no-underline"
           >
-            <MentoriaLogo priority className="h-9 w-auto max-h-[40px] min-w-[120px] object-contain object-left" />
+            <MentoriaLogo
+              priority
+              className="h-7 w-auto max-h-8 min-w-0 max-w-[min(124px,36vw)] object-contain object-left sm:h-8 sm:max-h-9 sm:max-w-[min(140px,40vw)] md:h-9 md:max-h-[40px] md:max-w-[min(180px,50vw)]"
+            />
           </Link>
           <nav className="dash-nav dash-nav-desktop min-w-0" aria-label="Main">
             {navItems.map((item) => (
