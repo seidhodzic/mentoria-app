@@ -665,26 +665,10 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
               aria-label="Mentoria — home"
             >
               <img
-                alt=""
-                width={20}
-                height={15}
-                src={mktAsset('assets/images/index-b1a1cf456366.png')}
-                aria-hidden
-                style={{ display: 'block', flexShrink: 0 }}
+                src="/mentoria-logo.svg"
+                alt="Mentoria"
+                style={{ height: 30, width: 'auto', display: 'block' }}
               />
-              <span
-                style={{
-                  fontFamily: "'Saira Condensed',sans-serif",
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  color: '#F7BC15',
-                  textTransform: 'uppercase',
-                  lineHeight: 1,
-                }}
-              >
-                ENTORIA
-              </span>
             </a>
             <p id="t-footer-desc">{t('t-footer-desc')}</p>
           </div>

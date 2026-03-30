@@ -73,9 +73,7 @@
     overflow: visible;
   }
 
-  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-logo svg { width: 36px; height: 28px; }
-  .nav-logo span {}
+  .nav-logo { display: inline-flex; align-items: center; text-decoration: none; }
 
   .nav-links { display: flex; align-items: center; gap: 36px; margin-left: 48px; }
   .nav-links a {
@@ -983,8 +981,8 @@
 }
 @media (max-width: 600px) {
   nav { padding: 0 4%; }
-  .nav-logo span { font-size: 1.2rem !important; }
-  .nav-mobile-login {
+  .nav-logo img { height: 28px !important; }
+.nav-mobile-login {
     min-height: 38px;
     padding: 0 10px;
     font-size: 0.62rem;

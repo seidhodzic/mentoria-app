@@ -235,26 +235,10 @@ export function MarketingHome() {
           aria-label="Mentoria — home"
         >
           <img
-            alt=""
-            width={28}
-            height={21}
-            src={mktAsset('assets/images/index-679232523f0b.png')}
-            aria-hidden
-            style={{ display: 'block', flexShrink: 0 }}
+            src="/mentoria-logo.svg"
+            alt="Mentoria"
+            style={{ height: 36, width: 'auto', display: 'block' }}
           />
-          <span
-            style={{
-              fontFamily: "'Saira Condensed',sans-serif",
-              fontSize: '1.55rem',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
-              color: '#FFFFFF',
-              textTransform: 'uppercase',
-              lineHeight: 1,
-            }}
-          >
-            ENTORIA
-          </span>
         </a>
         <div className="nav-links">
           <a href="#services" id="t-nav-sports">
