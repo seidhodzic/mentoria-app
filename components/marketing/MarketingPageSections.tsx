@@ -1,7 +1,6 @@
 import {
   Award,
   Briefcase,
-  CheckCircle2,
   ChevronRight,
   Globe,
   GraduationCap,
@@ -240,20 +239,10 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar1-body">
               {t('t-pillar1-body')}
             </p>
-            <div className="pillar-tags !flex !flex-wrap gap-2">
+            <div className="pillar-tags">
               {(['pt1-tag1', 'pt1-tag2', 'pt1-tag3', 'pt1-tag4', 'pt1-tag5', 'pt1-tag6', 'pt1-tag7', 'pt1-tag8'] as const).map(
                 (k) => (
-                  <span
-                    key={k}
-                    className="tag !inline-flex items-center gap-2"
-                    id={k}
-                  >
-                    <CheckCircle2
-                      className="h-5 w-5 flex-shrink-0 text-gold"
-                      aria-hidden
-                    />
-                    {t(k)}
-                  </span>
+                  <span key={k} className="tag" id={k}>{t(k)}</span>
                 ),
               )}
             </div>
@@ -283,19 +272,9 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar2-body">
               {t('t-pillar2-body')}
             </p>
-            <div className="pillar-tags !flex !flex-wrap gap-2">
+            <div className="pillar-tags">
               {(['pt2-tag1', 'pt2-tag2', 'pt2-tag3', 'pt2-tag4'] as const).map((k) => (
-                <span
-                  key={k}
-                  className="tag !inline-flex items-center gap-2"
-                  id={k}
-                >
-                  <CheckCircle2
-                    className="h-5 w-5 flex-shrink-0 text-gold"
-                    aria-hidden
-                  />
-                  {t(k)}
-                </span>
+                <span key={k} className="tag" id={k}>{t(k)}</span>
               ))}
             </div>
           </div>
@@ -326,19 +305,9 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar3-body">
               {t('t-pillar3-body')}
             </p>
-            <div className="pillar-tags !flex !flex-wrap gap-2">
+            <div className="pillar-tags">
               {(['pt3-tag1', 'pt3-tag2', 'pt3-tag3', 'pt3-tag4'] as const).map((k) => (
-                <span
-                  key={k}
-                  className="tag !inline-flex items-center gap-2"
-                  id={k}
-                >
-                  <CheckCircle2
-                    className="h-5 w-5 flex-shrink-0 text-gold"
-                    aria-hidden
-                  />
-                  {t(k)}
-                </span>
+                <span key={k} className="tag" id={k}>{t(k)}</span>
               ))}
             </div>
           </div>
@@ -503,12 +472,8 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
                 <div className="svc-title" id={titleKey}>
                   <H html={t(titleKey)} />
                 </div>
-                <p className="svc-body flex items-start gap-2" id={bodyKey}>
-                  <CheckCircle2
-                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold opacity-90"
-                    aria-hidden
-                  />
-                  <span>{t(bodyKey)}</span>
+                <p className="svc-body" id={bodyKey}>
+                  {t(bodyKey)}
                 </p>
               </div>
             );
@@ -888,17 +853,17 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <ul className="person-achievements" style={{ listStyle: 'none', margin: '20px 0 28px', padding: 0 }}>
+          <div className="achievement-chips">
             {sabBadges.map((k, i) => {
               const Icon = SAB_ACHIEVEMENT_ICONS[i];
               return (
-                <li key={k} className="achievement-badge">
-                  <Icon strokeWidth={2} aria-hidden />
+                <div key={k} className="achievement-chip">
+                  <Icon className="achievement-chip-icon" strokeWidth={2} aria-hidden />
                   <span id={k}>{t(k)}</span>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
           <div className="person-highlight" id="sab-highlight">
             <H html={t('sab-highlight')} />
           </div>
@@ -970,17 +935,17 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <ul className="person-achievements" style={{ listStyle: 'none', margin: '20px 0 28px', padding: 0 }}>
+          <div className="achievement-chips">
             {jasBadges.map((k, i) => {
               const Icon = JAS_ACHIEVEMENT_ICONS[i];
               return (
-                <li key={k} className="achievement-badge">
-                  <Icon strokeWidth={2} aria-hidden />
+                <div key={k} className="achievement-chip">
+                  <Icon className="achievement-chip-icon" strokeWidth={2} aria-hidden />
                   <span id={k}>{t(k)}</span>
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
           <div className="person-highlight" id="jas-highlight">
             <H html={t('jas-highlight')} />
           </div>
