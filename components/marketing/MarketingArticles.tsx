@@ -1,4 +1,3 @@
-import { CheckCircle2 } from 'lucide-react';
 import longArticlesEnJson from '@/lib/marketing-long-articles-en.json';
 import { mktAsset } from '@/lib/mkt-assets';
 import type { ArticleTab, Lang } from './types';
@@ -7,6 +6,29 @@ type LongEnKey = keyof typeof longArticlesEnJson;
 
 function H({ html }: { html: string }) {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+/** Inline icon — avoids lucide bundle/SSR resolution issues on production prerender. */
+function ArticlesSectionHeadingIcon({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
 }
 
 type Props = {
@@ -69,10 +91,7 @@ export function ArticlesSection(p: Props) {
             id="t-articles-h2"
             className="flex items-start gap-2 sm:gap-3"
           >
-            <CheckCircle2
-              className="mt-1 h-5 w-5 flex-shrink-0 text-gold sm:h-6 sm:w-6"
-              aria-hidden
-            />
+            <ArticlesSectionHeadingIcon className="mt-1 h-5 w-5 flex-shrink-0 text-gold sm:h-6 sm:w-6" />
             <span>
               <H html={t('t-articles-h2')} />
             </span>
