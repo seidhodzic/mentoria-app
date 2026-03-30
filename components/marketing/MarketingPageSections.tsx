@@ -1,7 +1,6 @@
 import {
   Award,
   Briefcase,
-  ChevronRight,
   Globe,
   GraduationCap,
   ShieldCheck,
@@ -581,36 +580,35 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             </div>
           </div>
           <div className="about-visual">
-            <div className="about-big-text">MENTORIA</div>
+            <div className="about-big-text font-saira-condensed font-black uppercase tracking-tighter">
+              MENTORIA
+            </div>
             <div className="about-quote">
-              <p
-                id="t-about-quote"
-                className="flex items-start gap-2 sm:gap-3"
-              >
-                <ChevronRight
-                  className="mt-1 h-5 w-5 flex-shrink-0 text-gold"
-                  aria-hidden
-                />
-                <span>
-                  <H html={t('t-about-quote')} />
-                </span>
+              <p id="t-about-quote" className="italic">
+                <H html={t('t-about-quote')} />
               </p>
             </div>
             <div className="about-metrics">
               <div className="metric">
-                <div className="metric-val">FIFA</div>
+                <div className="metric-val font-saira-condensed font-black text-4xl md:text-5xl text-gold">
+                  FIFA
+                </div>
                 <div className="metric-lbl" id="t-metric-lbl1">
                   <H html={t('t-metric-lbl1')} />
                 </div>
               </div>
               <div className="metric">
-                <div className="metric-val">3+</div>
+                <div className="metric-val font-saira-condensed font-black text-4xl md:text-5xl text-gold">
+                  3+
+                </div>
                 <div className="metric-lbl" id="t-metric-lbl2">
                   <H html={t('t-metric-lbl2')} />
                 </div>
               </div>
               <div className="metric">
-                <div className="metric-val">360°</div>
+                <div className="metric-val font-saira-condensed font-black text-4xl md:text-5xl text-gold">
+                  360°
+                </div>
                 <div className="metric-lbl" id="t-metric-lbl3">
                   <H html={t('t-metric-lbl3')} />
                 </div>
