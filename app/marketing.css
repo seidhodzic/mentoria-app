@@ -602,30 +602,6 @@
     margin-bottom: 32px;
   }
 
-  .achievement-chips {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 16px;
-    margin-bottom: 24px;
-  }
-
-  .achievement-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    border: 1px solid rgba(25,53,62,0.15);
-    background: #fff;
-    padding: 5px 10px;
-    font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--teal); font-family: 'Saira', sans-serif;
-    border-radius: 2px;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-    cursor: default;
-  }
-  .achievement-chip:hover {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: var(--teal);
-  }
-  .achievement-chip-icon { flex-shrink: 0; color: var(--gold); width: 11px; height: 11px; }
-
   .person-divider {
     width: 40px; height: 3px;
     background: var(--gold);

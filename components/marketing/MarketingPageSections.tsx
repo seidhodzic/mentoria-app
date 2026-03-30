@@ -853,12 +853,12 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <div className="achievement-chips">
+          <div className="flex flex-wrap gap-2 mt-4 mb-6">
             {sabBadges.map((k, i) => {
               const Icon = SAB_ACHIEVEMENT_ICONS[i];
               return (
-                <div key={k} className="achievement-chip">
-                  <Icon className="achievement-chip-icon" strokeWidth={2} aria-hidden />
+                <div key={k} className="inline-flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira" style={{ color: 'var(--teal)' }}>
+                  <Icon className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--gold)' }} strokeWidth={2.5} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </div>
               );
@@ -935,12 +935,12 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <div className="achievement-chips">
+          <div className="flex flex-wrap gap-2 mt-4 mb-6">
             {jasBadges.map((k, i) => {
               const Icon = JAS_ACHIEVEMENT_ICONS[i];
               return (
-                <div key={k} className="achievement-chip">
-                  <Icon className="achievement-chip-icon" strokeWidth={2} aria-hidden />
+                <div key={k} className="inline-flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira" style={{ color: 'var(--teal)' }}>
+                  <Icon className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--gold)' }} strokeWidth={2.5} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </div>
               );
