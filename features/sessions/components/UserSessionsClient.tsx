@@ -110,7 +110,7 @@ export default function UserSessionsClient({ userId, userName, userEmail, mySess
                 <label>Topic *</label>
                 <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. FIFA Agent Exam preparation strategy" required />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-grid-2">
                 <div className="form-group" style={{ margin: 0 }}>
                   <label>Preferred Mentor (optional)</label>
                   <select value={selectedMentor} onChange={e => setSelectedMentor(e.target.value)}>

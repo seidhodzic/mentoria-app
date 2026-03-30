@@ -126,7 +126,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
           <div className="card" style={{ marginBottom: 24 }}>
             <h3 style={{ marginBottom: 20 }}>Upload New Material</h3>
             <form onSubmit={handleUpload}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              <div className="form-grid-2">
                 <div className="form-group" style={{ margin: 0 }}>
                   <label>Title *</label>
                   <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. FIFA Agent Exam Guide" required />

@@ -659,12 +659,17 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
       <footer>
         <div className="footer-grid">
           <div className="footer-brand">
-            <a className="nav-logo" href="#top">
+            <a
+              className="nav-logo"
+              href="#top"
+              aria-label="Mentoria — home"
+            >
               <img
-                alt="M"
+                alt=""
                 width={20}
                 height={15}
                 src={mktAsset('assets/images/index-b1a1cf456366.png')}
+                aria-hidden
                 style={{ display: 'block', flexShrink: 0 }}
               />
               <span
@@ -678,7 +683,7 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
                   lineHeight: 1,
                 }}
               >
-                MENTORIA
+                ENTORIA
               </span>
             </a>
             <p id="t-footer-desc">{t('t-footer-desc')}</p>

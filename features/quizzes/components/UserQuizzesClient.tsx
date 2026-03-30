@@ -133,11 +133,11 @@ export default function UserQuizzesClient({ userId, attempts: initialAttempts }:
 
         {error && <div className="auth-error" style={{ marginBottom: 20 }}>{error}</div>}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, maxWidth: 800 }}>
+        <div className="form-grid-2" style={{ gap: 24, maxWidth: 800, marginBottom: 0 }}>
           {/* Quiz config card */}
           <div className="card" style={{ gridColumn: '1 / -1' }}>
             <h3 style={{ marginBottom: 20 }}>Configure Your Quiz</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <div className="form-grid-2" style={{ marginBottom: 24 }}>
               <div className="form-group" style={{ margin: 0 }}>
                 <label>Topic Focus</label>
                 <select value={topic} onChange={e => setTopic(e.target.value)}>

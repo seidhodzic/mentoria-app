@@ -109,7 +109,7 @@ export default function AuthForm() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/dashboard`,
             data: {
               full_name: fullName || email,
               first_name: firstName,

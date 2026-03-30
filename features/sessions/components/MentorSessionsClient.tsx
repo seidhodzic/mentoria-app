@@ -169,7 +169,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
           <div className="card" style={{ marginBottom: 24 }}>
             <h3 style={{ marginBottom: 20 }}>Create New Session</h3>
             <form onSubmit={createSession}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              <div className="form-grid-2">
                 <div className="form-group" style={{ margin: 0 }}>
                   <label>Session Title *</label>
                   <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. FIFA Agent Exam Strategy" required />
@@ -182,7 +182,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              <div className="form-grid-2">
                 <div className="form-group" style={{ margin: 0 }}>
                   <label>Date & Time *</label>
                   <input type="datetime-local" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)} required />

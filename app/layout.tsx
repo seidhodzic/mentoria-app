@@ -18,6 +18,9 @@ const sairaCondensed = Saira_Condensed({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  ),
   title: 'Mentoria — Members Platform',
   description: 'Premium advisory platform for sports, investment and education professionals',
   icons: { icon: '/mentoria-logo.svg' },

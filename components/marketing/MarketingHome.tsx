@@ -229,12 +229,17 @@ export function MarketingHome() {
 
       {/* NAV */}
       <nav>
-        <a className="nav-logo" href="#top">
+        <a
+          className="nav-logo"
+          href="#top"
+          aria-label="Mentoria — home"
+        >
           <img
-            alt="M"
+            alt=""
             width={28}
             height={21}
             src={mktAsset('assets/images/index-679232523f0b.png')}
+            aria-hidden
             style={{ display: 'block', flexShrink: 0 }}
           />
           <span
@@ -248,7 +253,7 @@ export function MarketingHome() {
               lineHeight: 1,
             }}
           >
-            MENTORIA
+            ENTORIA
           </span>
         </a>
         <div className="nav-links">
