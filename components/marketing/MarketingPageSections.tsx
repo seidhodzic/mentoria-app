@@ -857,7 +857,10 @@ function PeopleSection({
             {sabBadges.map((k, i) => {
               const Icon = SAB_ACHIEVEMENT_ICONS[i];
               return (
-                <div key={k} className="inline-flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira" style={{ color: 'var(--teal)' }}>
+                <div
+                  key={k}
+                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:border-gold hover:shadow-sm transition-all"
+                >
                   <Icon className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--gold)' }} strokeWidth={2.5} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </div>
@@ -939,7 +942,10 @@ function PeopleSection({
             {jasBadges.map((k, i) => {
               const Icon = JAS_ACHIEVEMENT_ICONS[i];
               return (
-                <div key={k} className="inline-flex items-center gap-1.5 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira" style={{ color: 'var(--teal)' }}>
+                <div
+                  key={k}
+                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:border-gold hover:shadow-sm transition-all"
+                >
                   <Icon className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--gold)' }} strokeWidth={2.5} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </div>

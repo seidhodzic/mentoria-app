@@ -201,7 +201,7 @@ export function MarketingHome() {
   const galleryIdx = gallery?.i ?? 0;
 
   return (
-    <div ref={rootRef} className="marketing-root">
+    <div ref={rootRef} className="marketing-root bg-[#19353E]">
       {gallery ? (
         <GalleryModal
           images={galleryImages}
@@ -436,7 +436,7 @@ export function MarketingHome() {
         </a>
       </div>
 
-      <main id="top">
+      <main id="top" className="flex-grow bg-[#EFEFEF]">
         <MarketingPageSections
           lang={lang}
           t={t}

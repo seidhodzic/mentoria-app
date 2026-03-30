@@ -56,7 +56,6 @@
 
   .marketing-root {
     font-family: var(--font-saira), 'Saira', sans-serif;
-    background: #0d2229;
     color: var(--teal);
     overflow-x: hidden;
     min-height: 100vh;
@@ -151,8 +150,13 @@
 
   .hero-content {
     display: flex; flex-direction: column; justify-content: center;
-    padding: 100px 6% 80px;
+    padding: 4rem 6% 80px;
     position: relative; z-index: 2;
+  }
+  @media (min-width: 768px) {
+    .hero-content {
+      padding-top: 5rem;
+    }
   }
 
   .hero-eyebrow {

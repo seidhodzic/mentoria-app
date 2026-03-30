@@ -8,29 +8,6 @@ function H({ html }: { html: string }) {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-/** Inline icon — avoids lucide bundle/SSR resolution issues on production prerender. */
-function ArticlesSectionHeadingIcon({
-  className,
-}: {
-  className?: string;
-}) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
-
 type Props = {
   lang: Lang;
   t: (k: string) => string;
@@ -87,14 +64,8 @@ export function ArticlesSection(p: Props) {
           >
             <H html={t('t-articles-tag')} />
           </p>
-          <h2
-            id="t-articles-h2"
-            className="flex items-start gap-2 sm:gap-3"
-          >
-            <ArticlesSectionHeadingIcon className="mt-1 h-5 w-5 flex-shrink-0 text-gold sm:h-6 sm:w-6" />
-            <span>
-              <H html={t('t-articles-h2')} />
-            </span>
+          <h2 id="t-articles-h2">
+            <H html={t('t-articles-h2')} />
           </h2>
         </div>
         <div className="articles-tabs">
@@ -219,7 +190,7 @@ export function ArticlesSection(p: Props) {
             </div>
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="lj-btn"
               onClick={() => toggleArticle('lj')}
             >
@@ -270,7 +241,7 @@ export function ArticlesSection(p: Props) {
             </div>
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="hess-btn"
               onClick={() => toggleArticle('hess')}
             >
@@ -361,7 +332,7 @@ export function ArticlesSection(p: Props) {
             </div>
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="hvd-btn"
               onClick={() => toggleArticle('hvd')}
             >
@@ -407,7 +378,7 @@ export function ArticlesSection(p: Props) {
             />
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="ptb-btn"
               onClick={() => toggleArticle('ptb')}
             >
@@ -453,7 +424,7 @@ export function ArticlesSection(p: Props) {
             />
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="wob-btn"
               onClick={() => toggleArticle('wob')}
             >
@@ -499,7 +470,7 @@ export function ArticlesSection(p: Props) {
             />
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="cm-btn"
               onClick={() => toggleArticle('cm')}
             >
@@ -549,7 +520,7 @@ export function ArticlesSection(p: Props) {
             />
             <button
               type="button"
-              className="article-link"
+              className="inline-flex items-center gap-1 text-xs font-bold tracking-widest uppercase font-saira text-teal-mid hover:text-gold transition-colors mt-4"
               id="bre-btn"
               onClick={() => toggleArticle('bre')}
             >
