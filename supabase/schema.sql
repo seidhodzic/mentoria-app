@@ -74,6 +74,7 @@ create table if not exists public.materials (
   file_size bigint,
   category text,
   is_premium boolean not null default false,
+  target_audience text not null default 'all',
   created_at timestamptz not null default now()
 );
 
@@ -101,6 +102,15 @@ alter table public.materials add column if not exists file_size bigint;
 alter table public.materials add column if not exists category text;
 alter table public.materials add column if not exists is_premium boolean;
 update public.materials set is_premium = coalesce(is_premium, false) where is_premium is null;
+alter table public.materials alter column is_premium set default false;
+alter table public.materials alter column is_premium set not null;
+alter table public.materials add column if not exists target_audience text not null default 'all';
+update public.materials set target_audience = 'all' where target_audience is null;
+alter table public.materials drop constraint if exists materials_target_audience_check;
+alter table public.materials add constraint materials_target_audience_check
+  check (target_audience in (
+    'all','player','club','investor','agent','executive','lawyer','coach','student','other'
+  ));
 alter table public.materials add column if not exists visibility text not null default 'public';
 update public.materials set visibility = 'public' where visibility is null;
 
@@ -390,19 +400,40 @@ create policy "materials_select_rls"
     or (
       (select auth.uid()) is not null
       and visibility = 'public'
+      and public.auth_is_mentor_or_admin()
+    )
+    or (
+      (select auth.uid()) is not null
+      and visibility = 'public'
+      and not public.auth_is_mentor_or_admin()
       and (
         not coalesce(is_premium, false)
-        or exists (
-          select 1 from public.subscriptions s
-          where s.user_id = (select auth.uid())
-            and s.status = 'active'
-        )
-        or exists (
-          select 1 from public.profiles p
-          where p.id = (select auth.uid())
-            and p.signup_access_type = 'subscription'
-            and p.status = 'active'
-            and coalesce(p.is_active, false)
+        or (
+          coalesce(is_premium, false)
+          and (
+            exists (
+              select 1 from public.subscriptions s
+              where s.user_id = (select auth.uid())
+                and s.status = 'active'
+            )
+            or exists (
+              select 1 from public.profiles p
+              where p.id = (select auth.uid())
+                and p.signup_access_type = 'subscription'
+                and p.status = 'active'
+                and coalesce(p.is_active, false)
+            )
+          )
+          and (
+            coalesce(target_audience, 'all') = 'all'
+            or exists (
+              select 1 from public.profiles p
+              where p.id = (select auth.uid())
+                and coalesce(p.is_active, false)
+                and p.profile_type is not null
+                and p.profile_type = target_audience
+            )
+          )
         )
       )
     )

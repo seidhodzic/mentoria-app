@@ -14,7 +14,7 @@ import { checkRateLimitBucket, checkSignupRateLimit } from '@/lib/server/rate-li
 import { ensureUserProfile } from '@/lib/server/ensure-user-profile';
 import { deleteSupabaseAuthCookieChunks } from '@/lib/supabase/auth-cookie';
 import { createServiceRoleClient } from '@/lib/supabase/admin';
-import { createClient } from '@/lib/supabase-server';
+import { createClient, createLoginClient } from '@/lib/supabase/server';
 
 /** Reject auth.users rows older than this when verifying signup notifications. */
 const SIGNUP_MAX_AGE_MS = 2 * 60 * 60 * 1000;
@@ -31,11 +31,13 @@ export async function signInWithPasswordAction(
 
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '').trim();
+  const remember = formData.get('remember') === 'on';
   if (!email || !password) {
     return { error: 'Email and password are required.' };
   }
 
-  const supabase = createClient();
+  // 30-day persistent cookie when "Remember me" is checked; session cookie otherwise.
+  const supabase = createLoginClient(remember ? 30 * 24 * 60 * 60 : undefined);
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     return { error: error.message };

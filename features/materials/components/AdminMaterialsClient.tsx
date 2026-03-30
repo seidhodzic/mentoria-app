@@ -3,12 +3,15 @@ import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import DashboardHeader from '@/components/layout/DashboardHeader';
 import Link from 'next/link';
+import { MATERIAL_TARGET_AUDIENCES } from '@/lib/auth/register-options';
 
 type Material = {
   id: string; title: string; description: string | null;
   file_url: string | null; file_name: string | null;
   file_size: number | null; category: string | null;
-  is_premium: boolean | null; created_at: string;
+  is_premium: boolean | null;
+  target_audience: string | null;
+  created_at: string;
 };
 
 const ADMIN_NAV = [
@@ -31,7 +34,8 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('general');
-  const [isPremium, setIsPremium] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
+  const [targetAudience, setTargetAudience] = useState<string>('all');
   const fileRef = useRef<HTMLInputElement>(null);
 
   function showMsg(type: 'success' | 'error', text: string) {
@@ -60,12 +64,13 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
         file_size: file.size,
         category,
         is_premium: isPremium,
+        target_audience: targetAudience,
         owner_id: userId,
         visibility: 'public',
       }).select().single();
       if (dbError) throw dbError;
       setMaterials(prev => [mat, ...prev]);
-      setTitle(''); setDescription(''); setCategory('general'); setIsPremium(true);
+      setTitle(''); setDescription(''); setCategory('general'); setIsPremium(false); setTargetAudience('all');
       if (fileRef.current) fileRef.current.value = '';
       setShowForm(false);
       showMsg('success', `"${mat.title}" uploaded successfully.`);
@@ -141,6 +146,19 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
                 </div>
               </div>
               <div className="form-group">
+                <label>Premium audience (when marked premium)</label>
+                <select
+                  value={targetAudience}
+                  onChange={e => setTargetAudience(e.target.value)}
+                  disabled={!isPremium}
+                  title={!isPremium ? 'Enable Premium to restrict by audience' : undefined}
+                >
+                  {MATERIAL_TARGET_AUDIENCES.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
                 <label>Description</label>
                 <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description of this material" />
               </div>
@@ -150,8 +168,8 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 20 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontFamily: "'Saira', sans-serif", fontSize: '0.85rem', fontWeight: 400, color: 'var(--teal)' }}>
-                  <input type="checkbox" checked={isPremium} onChange={e => setIsPremium(e.target.checked)} style={{ width: 'auto' }} />
-                  Premium (subscribers only)
+                  <input type="checkbox" checked={isPremium} onChange={e => setIsPremium(e.target.checked)} className="h-4 w-4 shrink-0" />
+                  Premium (paid subscribers in the selected audience)
                 </label>
               </div>
               <button className="btn btn-primary" type="submit" disabled={uploading}>
@@ -173,7 +191,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
           {materials.length > 0 ? (
             <table>
               <thead>
-                <tr><th>Title</th><th>Category</th><th>Size</th><th>Access</th><th>Uploaded</th><th>Actions</th></tr>
+                <tr><th>Title</th><th>Category</th><th>Size</th><th>Access</th><th>Audience</th><th>Uploaded</th><th>Actions</th></tr>
               </thead>
               <tbody>
                 {materials.map(m => (
@@ -185,6 +203,9 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
                     <td><span className="badge badge-user">{m.category ?? 'general'}</span></td>
                     <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{formatSize(m.file_size)}</td>
                     <td><span className={`badge ${m.is_premium ?? false ? 'badge-admin' : 'badge-active'}`}>{m.is_premium ?? false ? 'Premium' : 'Free'}</span></td>
+                    <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 400 }}>
+                      {MATERIAL_TARGET_AUDIENCES.find((a) => a.value === (m.target_audience ?? 'all'))?.label ?? (m.target_audience ?? 'all')}
+                    </td>
                     <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(m.created_at).toLocaleDateString()}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
