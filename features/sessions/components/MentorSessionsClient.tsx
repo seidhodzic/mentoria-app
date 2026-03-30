@@ -3,6 +3,11 @@ import { createClient } from '@/lib/supabase-browser';
 import type { SessionTypeEnum } from '@/lib/supabase-app-types';
 import type { Tables } from '@/types/supabase';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import {
+  DASH_PRIMARY_ACTION_CLASS,
+  DASH_PRIMARY_ACTION_HEADER_CLASS,
+  DASH_TABLE_ACTION_CLASS,
+} from '@/lib/dashboard-ui';
 import { useState } from 'react';
 
 type Session = Tables<'sessions'> & {
@@ -151,7 +156,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={MENTOR_NAV} activeNav="/mentor/sessions">
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+        <button type="button" onClick={() => setShowForm(v => !v)} className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           {showForm ? '✕ Cancel' : '+ New Session'}
         </button>
       </DashboardHeader>
@@ -221,7 +226,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
                 <label>Description</label>
                 <input value={description} onChange={e => setDescription(e.target.value)} placeholder="What will this session cover?" />
               </div>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Creating...' : 'Create Session'}</button>
+              <button className={DASH_PRIMARY_ACTION_CLASS} type="submit" disabled={saving}>{saving ? 'Creating...' : 'Create Session'}</button>
             </form>
           </div>
         )}
@@ -280,7 +285,7 @@ export default function MentorSessionsClient({ mentorId, mentorName, sessions: i
                       <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400, maxWidth: 200 }}>{r.message ?? '—'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>
-                          <button onClick={() => handleRequest(r, 'approved')} className="btn btn-primary btn-sm">Approve</button>
+                          <button type="button" onClick={() => handleRequest(r, 'approved')} className={DASH_TABLE_ACTION_CLASS}>Approve</button>
                           <button onClick={() => handleRequest(r, 'declined')} className="btn btn-danger btn-sm">Decline</button>
                         </div>
                       </td>
@@ -322,7 +327,7 @@ function SessionCard({ session, onUpdate, formatDate, isMentor }: {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
           {session.meet_link ? (
-            <a href={session.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <a href={session.meet_link} target="_blank" rel="noopener noreferrer" className={DASH_PRIMARY_ACTION_CLASS} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
               Join Meet
             </a>
@@ -343,7 +348,7 @@ function SessionCard({ session, onUpdate, formatDate, isMentor }: {
         <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
           <input value={newLink} onChange={e => setNewLink(e.target.value)} placeholder="https://meet.google.com/xxx-xxxx-xxx"
             style={{ flex: 1, padding: '8px 12px', border: '1.5px solid rgba(25,53,62,0.15)', borderRadius: 3, fontFamily: "'Saira', sans-serif", fontSize: '0.9rem', fontWeight: 400, outline: 'none' }} />
-          <button onClick={() => { onUpdate(session.id, { meet_link: newLink }); setEditingLink(false); }} className="btn btn-primary btn-sm">Save</button>
+          <button type="button" onClick={() => { onUpdate(session.id, { meet_link: newLink }); setEditingLink(false); }} className={DASH_PRIMARY_ACTION_CLASS}>Save</button>
           <button onClick={() => setEditingLink(false)} className="btn btn-outline btn-sm">Cancel</button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import { DASH_PRIMARY_ACTION_HEADER_CLASS } from '@/lib/dashboard-ui';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import Link from 'next/link';
@@ -25,11 +26,7 @@ export default async function UserMaterialsPage() {
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={USER_NAV} activeNav="/user/materials">
-        <Link
-          href="/user"
-          className="btn btn-outline btn-sm"
-          style={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)' }}
-        >
+        <Link href="/user" className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           ← Dashboard
         </Link>
       </DashboardHeader>

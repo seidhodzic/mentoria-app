@@ -67,6 +67,19 @@
     flex: 1;
   }
 
+  .marketing-root h1,
+  .marketing-root h2,
+  .marketing-root h3,
+  .marketing-root h4,
+  .marketing-root h5,
+  .marketing-root h6,
+  .marketing-root .title,
+  .marketing-root .heading {
+    font-family: var(--font-saira-condensed), 'Saira Condensed', sans-serif !important;
+    text-transform: uppercase;
+    font-weight: 900;
+  }
+
   /* ── NAV ── */
   .marketing-root nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;

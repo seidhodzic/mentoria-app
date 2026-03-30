@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import { DASH_PRIMARY_ACTION_CLASS, DASH_PRIMARY_ACTION_HEADER_CLASS } from '@/lib/dashboard-ui';
 import Link from 'next/link';
 import { MATERIAL_TARGET_AUDIENCES } from '@/lib/auth/register-options';
 
@@ -110,7 +111,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/materials">
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+        <button type="button" onClick={() => setShowForm(v => !v)} className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           {showForm ? '✕ Cancel' : '+ Upload Material'}
         </button>
       </DashboardHeader>
@@ -172,7 +173,7 @@ export default function AdminMaterialsClient({ materials: initial, userId }: { m
                   Premium (paid subscribers in the selected audience)
                 </label>
               </div>
-              <button className="btn btn-primary" type="submit" disabled={uploading}>
+              <button className={DASH_PRIMARY_ACTION_CLASS} type="submit" disabled={uploading}>
                 {uploading ? 'Uploading...' : 'Upload Material'}
               </button>
             </form>

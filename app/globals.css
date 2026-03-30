@@ -140,7 +140,11 @@ tr:hover td{background:rgba(25,53,62,0.02)}
 .dash-header .btn,.dash-content .btn,.dash-layout .btn,.course-lesson-layout .btn{font-family:var(--font-saira-condensed),sans-serif;letter-spacing:0.12em}
 .btn-primary{background:var(--gold);color:var(--teal)}
 .btn-primary:hover{background:var(--gold-dark);transform:translateY(-2px)}
-.dash-sign-out svg{stroke:var(--teal)}
+.dash-sign-out svg{stroke:currentColor}
+/* Sleek header CTAs: Tailwind uses teal-mid; on dark bar use light text until hover */
+.dash-header .dash-primary-sleek-btn{color:rgba(239,239,239,0.96)!important;border-color:rgba(255,255,255,0.28)!important;background:rgba(255,255,255,0.06)!important}
+.dash-header .dash-primary-sleek-btn:hover{color:var(--gold)!important;border-color:rgba(247,188,21,0.55)!important;background:rgba(247,188,21,0.1)!important}
+.dash-header .dash-primary-sleek-btn svg{stroke:currentColor}
 .btn-primary:active{transform:translateY(0)}
 .btn-teal{background:var(--teal);color:var(--white)}
 .btn-teal:hover{background:var(--teal-mid);transform:translateY(-2px)}

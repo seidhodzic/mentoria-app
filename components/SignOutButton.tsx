@@ -1,6 +1,8 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
+import { DASH_PRIMARY_ACTION_HEADER_CLASS } from '@/lib/dashboard-ui';
+
 export default function SignOutButton() {
   const router = useRouter();
   async function handleSignOut() {
@@ -13,7 +15,7 @@ export default function SignOutButton() {
     <button
       type="button"
       onClick={handleSignOut}
-      className="btn btn-primary btn-sm dash-sign-out"
+      className={`${DASH_PRIMARY_ACTION_HEADER_CLASS} dash-sign-out`}
       aria-label="Sign out"
     >
       <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>

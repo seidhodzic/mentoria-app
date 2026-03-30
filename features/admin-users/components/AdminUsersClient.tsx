@@ -8,6 +8,10 @@ import { createClient } from '@/lib/supabase-browser';
 import type { UserRoleEnum, UserStatusEnum } from '@/lib/supabase-app-types';
 import type { Tables } from '@/types/supabase';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import {
+  DASH_PRIMARY_ACTION_HEADER_CLASS,
+  DASH_TABLE_ACTION_CLASS,
+} from '@/lib/dashboard-ui';
 import { useState } from 'react';
 
 type User = Tables<'profiles'>;
@@ -164,7 +168,7 @@ export default function AdminUsersClient({ users: initialUsers }: { users: User[
         <div className="dash-user-pill">
           <span className="role-badge">admin</span>
         </div>
-        <a href="/admin" className="btn btn-outline btn-sm" style={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)' }}>
+        <a href="/admin" className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           ← Overview
         </a>
       </DashboardHeader>
@@ -331,8 +335,9 @@ export default function AdminUsersClient({ users: initialUsers }: { users: User[
                         <div style={{ display: 'flex', gap: 6 }}>
                           {u.status === 'pending' && (
                             <button
+                              type="button"
                               onClick={() => updateUser(u.id, { status: 'active' })}
-                              className="btn btn-primary btn-sm"
+                              className={DASH_TABLE_ACTION_CLASS}
                             >
                               Activate
                             </button>
@@ -347,8 +352,9 @@ export default function AdminUsersClient({ users: initialUsers }: { users: User[
                           )}
                           {u.status === 'suspended' && (
                             <button
+                              type="button"
                               onClick={() => updateUser(u.id, { status: 'active' })}
-                              className="btn btn-teal btn-sm"
+                              className={DASH_TABLE_ACTION_CLASS}
                             >
                               Restore
                             </button>

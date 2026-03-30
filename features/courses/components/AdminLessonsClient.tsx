@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import { DASH_PRIMARY_ACTION_CLASS, DASH_PRIMARY_ACTION_HEADER_CLASS } from '@/lib/dashboard-ui';
 import Link from 'next/link';
 
 type Lesson = {
@@ -87,7 +88,7 @@ export default function AdminLessonsClient({ course, lessons: initial, userId }:
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/courses">
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+        <button type="button" onClick={() => setShowForm(v => !v)} className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           {showForm ? '✕ Cancel' : '+ Add Lesson'}
         </button>
       </DashboardHeader>
@@ -134,14 +135,16 @@ export default function AdminLessonsClient({ course, lessons: initial, userId }:
                   Premium lesson (requires active subscription for members)
                 </label>
               </div>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Saving...' : 'Add Lesson'}</button>
+              <button className={DASH_PRIMARY_ACTION_CLASS} type="submit" disabled={saving}>{saving ? 'Saving...' : 'Add Lesson'}</button>
             </form>
           </div>
         )}
 
         <div className="section-header" style={{ marginBottom: 16 }}>
           <h2>{lessons.length} Lesson{lessons.length !== 1 ? 's' : ''}</h2>
-          <Link href="/admin/courses" className="btn btn-outline btn-sm">← Back to Courses</Link>
+          <Link href="/admin/courses" className={DASH_PRIMARY_ACTION_CLASS}>
+            ← Back to Courses
+          </Link>
         </div>
 
         <div className="table-wrap">

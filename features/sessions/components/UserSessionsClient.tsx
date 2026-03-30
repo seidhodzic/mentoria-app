@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import { DASH_PRIMARY_ACTION_CLASS, DASH_PRIMARY_ACTION_HEADER_CLASS } from '@/lib/dashboard-ui';
 
 type Session = {
   id: string; title: string; description: string | null;
@@ -87,7 +88,7 @@ export default function UserSessionsClient({ userId, userName, userEmail, mySess
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={USER_NAV} activeNav="/user/sessions">
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+        <button type="button" onClick={() => setShowForm(v => !v)} className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           {showForm ? '✕ Cancel' : '+ Request Session'}
         </button>
       </DashboardHeader>
@@ -129,7 +130,7 @@ export default function UserSessionsClient({ userId, userName, userEmail, mySess
                   placeholder="Tell your mentor what you'd like to focus on..."
                   rows={3} style={{ resize: 'vertical' }} />
               </div>
-              <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Submitting...' : 'Submit Request'}</button>
+              <button className={DASH_PRIMARY_ACTION_CLASS} type="submit" disabled={saving}>{saving ? 'Submitting...' : 'Submit Request'}</button>
             </form>
           </div>
         )}
@@ -161,7 +162,7 @@ export default function UserSessionsClient({ userId, userName, userEmail, mySess
                         {s.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
                       </div>
                       {s.meet_link ? (
-                        <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className={DASH_PRIMARY_ACTION_CLASS} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                             <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                           </svg>
@@ -199,7 +200,7 @@ export default function UserSessionsClient({ userId, userName, userEmail, mySess
                         {s.description && <div style={{ fontFamily: "'Saira', sans-serif", fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(25,53,62,0.6)', marginTop: 6 }}>{s.description}</div>}
                       </div>
                       {s.meet_link && (
-                        <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">Join Session</a>
+                        <a href={s.meet_link} target="_blank" rel="noopener noreferrer" className={DASH_PRIMARY_ACTION_CLASS}>Join Session</a>
                       )}
                     </div>
                   </div>

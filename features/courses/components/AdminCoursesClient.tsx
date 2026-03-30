@@ -2,6 +2,11 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import {
+  DASH_PRIMARY_ACTION_CLASS,
+  DASH_PRIMARY_ACTION_HEADER_CLASS,
+  DASH_TABLE_ACTION_CLASS,
+} from '@/lib/dashboard-ui';
 import Link from 'next/link';
 
 type Course = {
@@ -85,7 +90,7 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
   return (
     <div className="dash-layout">
       <DashboardHeader navItems={ADMIN_NAV} activeNav="/admin/courses">
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary btn-sm">
+        <button type="button" onClick={() => setShowForm(v => !v)} className={DASH_PRIMARY_ACTION_HEADER_CLASS}>
           {showForm ? '✕ Cancel' : '+ New Course'}
         </button>
       </DashboardHeader>
@@ -121,7 +126,7 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
                 <label>Description</label>
                 <input value={description} onChange={e => setDescription(e.target.value)} placeholder="What will members learn in this course?" />
               </div>
-              <button className="btn btn-primary" type="submit" disabled={saving}>
+              <button className={DASH_PRIMARY_ACTION_CLASS} type="submit" disabled={saving}>
                 {saving ? 'Creating...' : 'Create Course'}
               </button>
             </form>
@@ -157,8 +162,15 @@ export default function AdminCoursesClient({ courses: initial, userId }: { cours
                     <td style={{ fontFamily: "'Saira', sans-serif", color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 400 }}>{new Date(c.created_at).toLocaleDateString()}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <Link href={`/admin/courses/${c.id}` as any} className="btn btn-outline btn-sm">Lessons</Link>
-                        <button onClick={() => togglePublish(c)} disabled={toggling === c.id} className={`btn btn-sm ${c.is_published ?? false ? 'btn-outline' : 'btn-teal'}`}>
+                        <Link href={`/admin/courses/${c.id}` as any} className={DASH_TABLE_ACTION_CLASS}>
+                          Lessons
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => togglePublish(c)}
+                          disabled={toggling === c.id}
+                          className={DASH_TABLE_ACTION_CLASS}
+                        >
                           {toggling === c.id ? '...' : c.is_published ?? false ? 'Unpublish' : 'Publish'}
                         </button>
                         <button onClick={() => handleDelete(c)} disabled={deleting === c.id} className="btn btn-danger btn-sm">
