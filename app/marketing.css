@@ -346,9 +346,6 @@
   .pillar:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(25,53,62,0.1); }
 
   .pillar-num {
-    font-family: 'Saira Condensed', sans-serif;
-    font-size: 5rem; font-weight: 900;
-    color: rgba(25,53,62,0.05);
     line-height: 1;
     position: absolute; top: 20px; right: 24px;
     pointer-events: none;
@@ -364,10 +361,7 @@
   }
 
   .pillar-title {
-    font-family: 'Saira Condensed', sans-serif;
-    font-size: 1.5rem; font-weight: 900;
-    text-transform: uppercase; color: var(--teal);
-    margin-bottom: 14px; letter-spacing: 0.02em;
+    margin-bottom: 14px;
   }
 
   .pillar-desc {
@@ -377,15 +371,6 @@
   }
 
   .pillar-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-size: 0.64rem; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 10px;
-    border: 1px solid rgba(25,53,62,0.15);
-    border-radius: 2px; color: var(--teal);
-    transition: all 0.2s;
-  }
-  .tag:hover { background: var(--gold); border-color: var(--gold); color: var(--teal); }
 
   /* ── SERVICES GRID ── */
   .services-intro {

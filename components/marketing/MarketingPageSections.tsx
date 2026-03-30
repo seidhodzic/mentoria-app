@@ -221,7 +221,9 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
         </p>
         <div className="pillars-grid">
           <div className="pillar" id="sports">
-            <span className="pillar-num">01</span>
+            <span className="pillar-num font-saira-condensed font-black text-8xl text-gray-100 opacity-70">
+              01
+            </span>
             <div className="pillar-icon">
               <svg fill="#F7BC15" height={44} width={44} viewBox="0 0 44 44">
                 <circle cx={22} cy={22} fill="none" r={18} stroke="#F7BC15" strokeWidth={2.5} />
@@ -233,7 +235,10 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
                 <polygon points="33,18 29,16 26,20 28,24 33,23" />
               </svg>
             </div>
-            <div className="pillar-title" id="t-pillar1-title">
+            <div
+              className="pillar-title font-saira-condensed font-black text-2xl md:text-3xl uppercase tracking-tight text-[#19353E]"
+              id="t-pillar1-title"
+            >
               <H html={t('t-pillar1-title')} />
             </div>
             <p className="pillar-desc" id="t-pillar1-body">
@@ -242,14 +247,22 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <div className="pillar-tags">
               {(['pt1-tag1', 'pt1-tag2', 'pt1-tag3', 'pt1-tag4', 'pt1-tag5', 'pt1-tag6', 'pt1-tag7', 'pt1-tag8'] as const).map(
                 (k) => (
-                  <span key={k} className="tag" id={k}>{t(k)}</span>
+                  <span
+                    key={k}
+                    className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                    id={k}
+                  >
+                    {t(k)}
+                  </span>
                 ),
               )}
             </div>
           </div>
 
           <div className="pillar" id="investment">
-            <span className="pillar-num">02</span>
+            <span className="pillar-num font-saira-condensed font-black text-8xl text-gray-100 opacity-70">
+              02
+            </span>
             <div className="pillar-icon">
               <svg fill="#F7BC15" height={44} width={44} viewBox="0 0 44 44">
                 <rect height={12} rx={1.5} width={8} x={4} y={28} />
@@ -266,7 +279,10 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
                 />
               </svg>
             </div>
-            <div className="pillar-title" id="t-pillar2-title">
+            <div
+              className="pillar-title font-saira-condensed font-black text-2xl md:text-3xl uppercase tracking-tight text-[#19353E]"
+              id="t-pillar2-title"
+            >
               <H html={t('t-pillar2-title')} />
             </div>
             <p className="pillar-desc" id="t-pillar2-body">
@@ -274,13 +290,21 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             </p>
             <div className="pillar-tags">
               {(['pt2-tag1', 'pt2-tag2', 'pt2-tag3', 'pt2-tag4'] as const).map((k) => (
-                <span key={k} className="tag" id={k}>{t(k)}</span>
+                <span
+                  key={k}
+                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                  id={k}
+                >
+                  {t(k)}
+                </span>
               ))}
             </div>
           </div>
 
           <div className="pillar" id="education">
-            <span className="pillar-num">03</span>
+            <span className="pillar-num font-saira-condensed font-black text-8xl text-gray-100 opacity-70">
+              03
+            </span>
             <div className="pillar-icon">
               <svg fill="#F7BC15" height={44} width={44} viewBox="0 0 44 44">
                 <path
@@ -299,7 +323,10 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
                 <line stroke="#F7BC15" strokeLinecap="round" strokeWidth={1.8} x1={24} x2={34} y1={26} y2={26} />
               </svg>
             </div>
-            <div className="pillar-title" id="t-pillar3-title">
+            <div
+              className="pillar-title font-saira-condensed font-black text-2xl md:text-3xl uppercase tracking-tight text-[#19353E]"
+              id="t-pillar3-title"
+            >
               <H html={t('t-pillar3-title')} />
             </div>
             <p className="pillar-desc" id="t-pillar3-body">
@@ -307,7 +334,13 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             </p>
             <div className="pillar-tags">
               {(['pt3-tag1', 'pt3-tag2', 'pt3-tag3', 'pt3-tag4'] as const).map((k) => (
-                <span key={k} className="tag" id={k}>{t(k)}</span>
+                <span
+                  key={k}
+                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                  id={k}
+                >
+                  {t(k)}
+                </span>
               ))}
             </div>
           </div>

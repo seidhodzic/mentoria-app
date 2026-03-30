@@ -5,14 +5,14 @@ import AppToaster from '@/components/AppToaster';
 
 const saira = Saira({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-saira',
   display: 'swap',
 });
 
 const sairaCondensed = Saira_Condensed({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '900'],
+  weight: ['400', '500', '600', '700', '800', '900'],
   variable: '--font-saira-condensed',
   display: 'swap',
 });
