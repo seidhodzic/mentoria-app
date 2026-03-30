@@ -243,12 +243,12 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar1-body">
               {t('t-pillar1-body')}
             </p>
-            <div className="pillar-tags">
+            <div className="flex flex-wrap content-start items-center gap-2 mt-6 w-full">
               {(['pt1-tag1', 'pt1-tag2', 'pt1-tag3', 'pt1-tag4', 'pt1-tag5', 'pt1-tag6', 'pt1-tag7', 'pt1-tag8'] as const).map(
                 (k) => (
                   <span
                     key={k}
-                    className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                    className="inline-flex items-center justify-center border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase font-saira text-[#19353E] whitespace-nowrap shadow-sm"
                     id={k}
                   >
                     {t(k)}
@@ -287,11 +287,11 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar2-body">
               {t('t-pillar2-body')}
             </p>
-            <div className="pillar-tags">
+            <div className="flex flex-wrap content-start items-center gap-2 mt-6 w-full">
               {(['pt2-tag1', 'pt2-tag2', 'pt2-tag3', 'pt2-tag4'] as const).map((k) => (
                 <span
                   key={k}
-                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                  className="inline-flex items-center justify-center border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase font-saira text-[#19353E] whitespace-nowrap shadow-sm"
                   id={k}
                 >
                   {t(k)}
@@ -331,11 +331,11 @@ export function MarketingPageSections(p: MarketingPageSectionsProps) {
             <p className="pillar-desc" id="t-pillar3-body">
               {t('t-pillar3-body')}
             </p>
-            <div className="pillar-tags">
+            <div className="flex flex-wrap content-start items-center gap-2 mt-6 w-full">
               {(['pt3-tag1', 'pt3-tag2', 'pt3-tag3', 'pt3-tag4'] as const).map((k) => (
                 <span
                   key={k}
-                  className="inline-flex items-center gap-2 border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-xs font-bold tracking-widest uppercase font-saira text-[#19353E]"
+                  className="inline-flex items-center justify-center border border-gray-200 bg-white px-3 py-1.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase font-saira text-[#19353E] whitespace-nowrap shadow-sm"
                   id={k}
                 >
                   {t(k)}

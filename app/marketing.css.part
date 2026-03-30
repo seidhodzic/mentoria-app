@@ -301,7 +301,6 @@
     margin-bottom: 24px;
   }
 
-  .pillar-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .tag {
     font-size: 0.64rem; font-weight: 600; letter-spacing: 0.1em;
     text-transform: uppercase;

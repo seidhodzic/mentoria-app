@@ -370,8 +370,6 @@
     margin-bottom: 24px;
   }
 
-  .pillar-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-
   /* ── SERVICES GRID ── */
   .services-intro {
     display: grid; grid-template-columns: 1fr 1fr;
