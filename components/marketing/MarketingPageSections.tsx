@@ -888,16 +888,12 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <ul className="m-0 mt-4 list-none p-0 font-saira text-sm text-teal-mid flex flex-col gap-3">
+          <ul className="person-achievements" style={{ listStyle: 'none', margin: '20px 0 28px', padding: 0 }}>
             {sabBadges.map((k, i) => {
               const Icon = SAB_ACHIEVEMENT_ICONS[i];
               return (
-                <li key={k} className="flex items-center gap-3">
-                  <Icon
-                    className="h-4 w-4 flex-shrink-0 text-gold"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
+                <li key={k} className="achievement-badge">
+                  <Icon strokeWidth={2} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </li>
               );
@@ -974,16 +970,12 @@ function PeopleSection({
               <LinkedInIcon /> LinkedIn
             </a>
           </div>
-          <ul className="m-0 mt-4 list-none p-0 font-saira text-sm text-teal-mid flex flex-col gap-3">
+          <ul className="person-achievements" style={{ listStyle: 'none', margin: '20px 0 28px', padding: 0 }}>
             {jasBadges.map((k, i) => {
               const Icon = JAS_ACHIEVEMENT_ICONS[i];
               return (
-                <li key={k} className="flex items-center gap-3">
-                  <Icon
-                    className="h-4 w-4 flex-shrink-0 text-gold"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
+                <li key={k} className="achievement-badge">
+                  <Icon strokeWidth={2} aria-hidden />
                   <span id={k}>{t(k)}</span>
                 </li>
               );
