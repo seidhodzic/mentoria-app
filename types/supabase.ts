@@ -114,8 +114,9 @@ export type Database = {
           file_size: number | null
           file_url: string | null
           id: string
-          is_premium: boolean | null
+          is_premium: boolean
           owner_id: string | null
+          target_audience: string
           title: string
           visibility: string
         }
@@ -127,8 +128,9 @@ export type Database = {
           file_size?: number | null
           file_url?: string | null
           id?: string
-          is_premium?: boolean | null
+          is_premium?: boolean
           owner_id?: string | null
+          target_audience?: string
           title: string
           visibility?: string
         }
@@ -140,8 +142,9 @@ export type Database = {
           file_size?: number | null
           file_url?: string | null
           id?: string
-          is_premium?: boolean | null
+          is_premium?: boolean
           owner_id?: string | null
+          target_audience?: string
           title?: string
           visibility?: string
         }

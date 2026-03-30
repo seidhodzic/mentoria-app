@@ -58,6 +58,12 @@ export const PROFILE_TYPES = [
 
 export type ProfileTypeValue = (typeof PROFILE_TYPES)[number]['value'];
 
+/** Stored in `materials.target_audience` — who may access a premium row (when `is_premium`). */
+export const MATERIAL_TARGET_AUDIENCES = [
+  { value: 'all' as const, label: 'All subscription types' },
+  ...PROFILE_TYPES.map((p) => ({ value: p.value, label: p.label })),
+] as const;
+
 export function getProfileHelper(value: string): string {
   const row = PROFILE_TYPES.find((p) => p.value === value);
   return row?.helper ?? '';
