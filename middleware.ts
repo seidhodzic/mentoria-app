@@ -83,7 +83,8 @@ export async function middleware(request: NextRequest) {
     const meta = user.user_metadata as { role?: string } | undefined;
     const role = normalizeRole(profile?.role ?? meta?.role);
     const dest = getDashboardPath(role);
-    return redirectWithSessionCookies(request, response, dest);
+    const qs = request.nextUrl.search;
+    return redirectWithSessionCookies(request, response, `${dest}${qs}`);
   }
 
   if (pathname.startsWith('/admin') || pathname.startsWith('/mentor')) {
@@ -137,7 +138,7 @@ export async function middleware(request: NextRequest) {
 
       const latestSub = subRows?.[0]?.status ?? null;
       if (!memberHasPremiumAccess(profile, latestSub)) {
-        return redirectWithSessionCookies(request, response, '/user?locked=1');
+        return redirectWithSessionCookies(request, response, '/pricing?locked=1');
       }
     }
   }

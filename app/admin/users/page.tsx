@@ -22,7 +22,7 @@ export default async function AdminUsersPage() {
   const { data: users, error: usersError } = await supabase
     .from('profiles')
     .select(
-      'id, email, full_name, role, status, profile_type, signup_access_type, signup_plan_key, is_active, stripe_customer_id, created_at, updated_at'
+      'id, email, full_name, role, status, profile_type, signup_access_type, signup_plan_key, is_active, stripe_customer_id, stripe_price_id, subscription_status, subscription_current_period_end, created_at, updated_at'
     )
     .order('created_at', { ascending: false });
 

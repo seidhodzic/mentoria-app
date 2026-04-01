@@ -1,4 +1,4 @@
-import { requireUserForApi } from '@/lib/server/auth';
+import { requirePremiumForApi } from '@/lib/server/auth';
 import { LIMITS, sanitizeText } from '@/lib/server/api-input';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -26,7 +26,7 @@ const FIFA_TOPICS = [
 ];
 
 export async function POST(req: NextRequest) {
-  const auth = await requireUserForApi();
+  const auth = await requirePremiumForApi();
   if (auth.unauthorized) return auth.unauthorized;
 
   let raw: unknown;

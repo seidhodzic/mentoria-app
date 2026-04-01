@@ -41,24 +41,33 @@ Copy `.env.example` to `.env.local` and fill in all values:
 ## Supabase Setup
 
 1. Create a new Supabase project
-2. Run migrations in order in SQL Editor (include `003_*` / `005_*` if present in your repo for admin helper and rate-limit storage):
+2. **Auth emails:** If sign-up shows “Error sending confirmation email”, Supabase could not deliver mail. Either:
+   - **Production:** In **Authentication → Emails** (or **Project Settings → Auth**), configure **Custom SMTP** (e.g. [Resend](https://resend.com/docs/send-with-supabase) with your `RESEND_API_KEY`), **or**
+   - **Local / MVP:** **Authentication → Providers → Email** → disable **Confirm email** so users can sign in without a link (re-enable once SMTP works).
+3. **Redirect URLs:** Under **Authentication → URL Configuration**, add your app origin(s), e.g. `http://localhost:3000/**` and `https://your-domain.vercel.app/**`, so `emailRedirectTo` used at sign-up (`/dashboard`) is allowed.
+4. Run migrations in order in SQL Editor (include `003_*` / `005_*` if present in your repo for admin helper and rate-limit storage):
    - `supabase/migrations/001_add_profile_fields.sql`
    - `supabase/migrations/002_sessions.sql`
    - `supabase/migrations/003_admin_helper.sql`
    - `supabase/migrations/004_subscriptions_user_id_unique.sql`
    - `supabase/migrations/005_rate_limit_buckets.sql`
-3. Or run the full schema: `supabase/schema.sql`
+5. Or run the full schema: `supabase/schema.sql`
 
 ## Stripe Setup
 
-1. Create products and prices in Stripe Dashboard
-2. Add price IDs to `.env.local`
-3. Set up webhook endpoint: `https://your-domain.com/api/webhook/stripe`
-4. Add webhook events:
+1. Create products and prices in Stripe Dashboard (Test mode for development).
+2. Add price IDs and keys to `.env.local` (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`).
+3. Apply DB migration `supabase/migrations/006_stripe_billing_sync.sql` (adds billing mirror columns on `profiles` and `stripe_price_id` on `subscriptions`).
+4. Register webhook endpoint (either URL works):
+   - `https://your-domain.com/api/webhook/stripe` (canonical)
+   - `https://your-domain.com/api/stripe/webhook` (alias)
+5. Subscribe to events:
    - `checkout.session.completed`
+   - `customer.subscription.created`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
    - `invoice.payment_failed`
+6. Local testing: `stripe listen --forward-to localhost:3000/api/webhook/stripe` and copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
 
 ## Vercel Deployment
 

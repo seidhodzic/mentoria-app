@@ -55,8 +55,8 @@ export async function createStripeCheckoutSession(input: CheckoutInput): Promise
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
-      success_url: `${base}/login?checkout=success`,
-      cancel_url: `${base}/register?checkout=cancel`,
+      success_url: `${base}/dashboard?success=true`,
+      cancel_url: `${base}/pricing?canceled=true`,
       metadata: {
         userId: input.userId,
         supabase_user_id: input.userId,

@@ -8,6 +8,8 @@ import { STRIPE_PRICES } from '@/lib/payments/stripe-prices';
 function UpgradeContent() {
   const searchParams = useSearchParams();
   const locked = searchParams.get('locked') === '1';
+  const canceled = searchParams.get('canceled') === 'true';
+  const success = searchParams.get('success') === 'true';
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,12 +20,14 @@ function UpgradeContent() {
     setError(null);
     setLoadingKey(priceKey);
     try {
-      const res = await fetch('/api/checkout', {
+      const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           priceId: STRIPE_PRICES[priceKey],
           mode,
+          successUrl: '/dashboard?success=true',
+          cancelUrl: '/pricing?canceled=true',
         }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
@@ -52,6 +56,33 @@ function UpgradeContent() {
         >
           ← Back to Dashboard
         </Link>
+
+        {success && (
+          <div
+            className="mb-10 rounded-sm border-2 border-green-400/60 bg-teal-mid/90 px-5 py-4 shadow-md"
+            role="status"
+          >
+            <p className="font-condensed text-xl font-bold uppercase tracking-wide text-white">
+              Payment successful
+            </p>
+            <p className="mt-2 max-w-2xl font-sans text-sm font-light text-white/85">
+              Your subscription is processing. If premium areas still show as locked, wait a few seconds for webhooks to
+              sync, then refresh.
+            </p>
+          </div>
+        )}
+
+        {canceled && (
+          <div
+            className="mb-10 rounded-sm border border-white/20 bg-teal-mid/80 px-5 py-4 shadow-md"
+            role="status"
+          >
+            <p className="font-condensed text-lg font-bold uppercase tracking-wide text-gold">Checkout canceled</p>
+            <p className="mt-2 font-sans text-sm font-light text-white/80">
+              No charges were made. You can choose a plan again whenever you are ready.
+            </p>
+          </div>
+        )}
 
         {locked && (
           <div

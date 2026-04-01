@@ -188,6 +188,9 @@ export type Database = {
           signup_plan_key: string | null
           status: string
           stripe_customer_id: string | null
+          stripe_price_id: string | null
+          subscription_current_period_end: string | null
+          subscription_status: string | null
           updated_at: string
         }
         Insert: {
@@ -202,6 +205,9 @@ export type Database = {
           signup_plan_key?: string | null
           status?: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Update: {
@@ -216,6 +222,9 @@ export type Database = {
           signup_plan_key?: string | null
           status?: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -509,6 +518,7 @@ export type Database = {
           plan: string
           status: string
           stripe_customer_id: string | null
+          stripe_price_id: string | null
           stripe_subscription_id: string | null
           user_id: string
         }
@@ -519,6 +529,7 @@ export type Database = {
           plan?: string
           status?: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
           stripe_subscription_id?: string | null
           user_id: string
         }
@@ -529,6 +540,7 @@ export type Database = {
           plan?: string
           status?: string
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
           stripe_subscription_id?: string | null
           user_id?: string
         }

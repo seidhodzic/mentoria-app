@@ -1,6 +1,3 @@
-/**
- * @deprecated Prefer POST `/api/stripe/checkout` — kept for backward compatibility.
- */
 import type { NextRequest } from 'next/server';
 import { handleStripeCheckoutPost } from '@/lib/payments/stripe-checkout-api';
 

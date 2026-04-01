@@ -13,6 +13,7 @@ import {
   type SignupAccessType,
   resolveSignupPlanKey,
 } from '@/lib/auth/register-options';
+import { formatSupabaseAuthError } from '@/lib/auth/format-supabase-auth-error';
 import { createClient } from '@/lib/supabase-browser';
 import Link from 'next/link';
 import { isRedirectError } from 'next/dist/client/components/redirect';
@@ -78,7 +79,7 @@ export default function AuthForm() {
         const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
-        if (err) throw err;
+        if (err) throw new Error(formatSupabaseAuthError(err.message));
         setMessage('Password reset email sent. Check your inbox.');
         return;
       }
@@ -105,11 +106,12 @@ export default function AuthForm() {
           oneTimeKey
         );
 
+        const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin).replace(/\/$/, '');
         const { data, error: signErr } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/dashboard`,
+            emailRedirectTo: `${siteUrl}/dashboard`,
             data: {
               full_name: fullName || email,
               first_name: firstName,
@@ -121,7 +123,7 @@ export default function AuthForm() {
             },
           },
         });
-        if (signErr) throw signErr;
+        if (signErr) throw new Error(formatSupabaseAuthError(signErr.message));
 
         if (data.user) {
           notifyAdminOfSignup({

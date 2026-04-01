@@ -18,7 +18,7 @@ const USER_NAV = [
 export default async function UserPage({
   searchParams,
 }: {
-  searchParams?: { locked?: string };
+  searchParams?: { locked?: string; success?: string };
 }) {
   const { supabase, user } = await requireUser();
 
@@ -64,6 +64,12 @@ export default async function UserPage({
         { label: 'Sessions Booked', value: '—', sub: 'coming in Phase 6' },
       ]}
     >
+      {searchParams?.success === 'true' && (
+        <div className="alert alert-warning" style={{ marginBottom: 28, borderColor: 'rgba(34,197,94,0.5)' }}>
+          Welcome back — your checkout completed successfully. Premium access should be active within a few seconds.
+          Refresh if courses or quizzes still appear locked.
+        </div>
+      )}
       {searchParams?.locked === '1' && (
         <div className="alert alert-warning" style={{ marginBottom: 28 }}>
           Courses, quizzes, materials and sessions are part of full membership. Complete subscription checkout (from

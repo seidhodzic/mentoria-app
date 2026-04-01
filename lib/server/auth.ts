@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { memberHasPremiumAccess } from '@/lib/member-entitlement';
 import { createClient } from '@/lib/supabase-server';
 import type { Database } from '@/types/supabase';
 
@@ -38,5 +39,44 @@ export async function requireUserForApi(): Promise<
       unauthorized: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
     };
   }
+  return { supabase, user, unauthorized: null };
+}
+
+/**
+ * Premium courses, quizzes, and AI APIs — active/trialing subscription, one-time purchase, or staff roles.
+ */
+export async function requirePremiumForApi(): Promise<
+  | { supabase: ServerClient; user: User; unauthorized: null }
+  | { supabase: null; user: null; unauthorized: NextResponse }
+> {
+  const base = await requireUserForApi();
+  if (base.unauthorized) return base;
+  const { supabase, user } = base;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, signup_access_type, status, is_active')
+    .eq('id', user.id)
+    .single();
+
+  const { data: subRows } = await supabase
+    .from('subscriptions')
+    .select('status')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const latestSub = subRows?.[0]?.status ?? null;
+  if (!memberHasPremiumAccess(profile, latestSub)) {
+    return {
+      supabase: null,
+      user: null,
+      unauthorized: NextResponse.json(
+        { error: 'Premium subscription required', code: 'PREMIUM_REQUIRED' },
+        { status: 403 }
+      ),
+    };
+  }
+
   return { supabase, user, unauthorized: null };
 }
