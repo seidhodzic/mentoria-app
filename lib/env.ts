@@ -6,7 +6,7 @@ export const env = {
   serviceRoleKey:         process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
   /** Optional; if set, signup notify Server Action requires the same value as NEXT_PUBLIC_SIGNUP_NOTIFY_TOKEN. */
   signupNotifySecret:     process.env.SIGNUP_NOTIFY_SECRET ?? '',
-  /** Server-only — Stripe Checkout & webhooks */
+  /** Server-only — Stripe Checkout & webhooks (`STRIPE_PRICE_*` in `lib/payments/stripe-prices.ts`) */
   stripeSecretKey:        process.env.STRIPE_SECRET_KEY ?? '',
   stripeWebhookSecret:    process.env.STRIPE_WEBHOOK_SECRET ?? '',
 };

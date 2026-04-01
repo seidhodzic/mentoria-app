@@ -1,31 +1,27 @@
 'use client';
 
+import type { CheckoutPlanKey } from '@/lib/payments/checkout-plan-keys';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { STRIPE_PRICES } from '@/lib/payments/stripe-prices';
 
 function UpgradeContent() {
   const searchParams = useSearchParams();
   const locked = searchParams.get('locked') === '1';
   const canceled = searchParams.get('canceled') === 'true';
   const success = searchParams.get('success') === 'true';
-  const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [loadingKey, setLoadingKey] = useState<CheckoutPlanKey | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function startCheckout(
-    priceKey: keyof typeof STRIPE_PRICES,
-    mode: 'subscription' | 'payment',
-  ) {
+  async function startCheckout(planKey: CheckoutPlanKey) {
     setError(null);
-    setLoadingKey(priceKey);
+    setLoadingKey(planKey);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: STRIPE_PRICES[priceKey],
-          mode,
+          planKey,
           successUrl: '/dashboard?success=true',
           cancelUrl: '/pricing?canceled=true',
         }),
@@ -128,7 +124,7 @@ function UpgradeContent() {
               <button
                 type="button"
                 disabled={loadingKey !== null}
-                onClick={() => startCheckout('monthly', 'subscription')}
+                onClick={() => startCheckout('monthly')}
                 className="mt-6 rounded-sm bg-gold px-4 py-3 font-sans text-sm font-bold uppercase tracking-wider text-teal transition hover:bg-gold-dark disabled:opacity-50"
               >
                 {loadingKey === 'monthly' ? 'Redirecting…' : 'Subscribe monthly'}
@@ -150,7 +146,7 @@ function UpgradeContent() {
               <button
                 type="button"
                 disabled={loadingKey !== null}
-                onClick={() => startCheckout('annual', 'subscription')}
+                onClick={() => startCheckout('annual')}
                 className="mt-6 rounded-sm bg-gold px-4 py-3 font-sans text-sm font-bold uppercase tracking-wider text-teal transition hover:bg-gold-dark disabled:opacity-50"
               >
                 {loadingKey === 'annual' ? 'Redirecting…' : 'Subscribe annually'}
@@ -173,7 +169,7 @@ function UpgradeContent() {
               <button
                 type="button"
                 disabled={loadingKey !== null}
-                onClick={() => startCheckout('fifa_exam', 'payment')}
+                onClick={() => startCheckout('fifa_exam')}
                 className="mt-4 rounded-sm bg-gold px-4 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-teal hover:bg-gold-dark disabled:opacity-50"
               >
                 {loadingKey === 'fifa_exam' ? 'Redirecting…' : 'Buy now'}
@@ -191,7 +187,7 @@ function UpgradeContent() {
               <button
                 type="button"
                 disabled={loadingKey !== null}
-                onClick={() => startCheckout('investment_masterclass', 'payment')}
+                onClick={() => startCheckout('investment_masterclass')}
                 className="mt-4 rounded-sm bg-gold px-4 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-teal hover:bg-gold-dark disabled:opacity-50"
               >
                 {loadingKey === 'investment_masterclass' ? 'Redirecting…' : 'Buy now'}
@@ -207,7 +203,7 @@ function UpgradeContent() {
               <button
                 type="button"
                 disabled={loadingKey !== null}
-                onClick={() => startCheckout('advisory_session', 'payment')}
+                onClick={() => startCheckout('advisory_session')}
                 className="mt-4 rounded-sm bg-gold px-4 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-teal hover:bg-gold-dark disabled:opacity-50"
               >
                 {loadingKey === 'advisory_session' ? 'Redirecting…' : 'Book & pay'}

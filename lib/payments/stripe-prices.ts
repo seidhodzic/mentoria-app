@@ -1,34 +1,45 @@
+import type { CheckoutPlanKey } from '@/lib/payments/checkout-plan-keys';
 import type { SubscriptionPlanKey } from './types';
 
-export const STRIPE_PRICES = {
-  monthly: process.env.STRIPE_PRICE_MONTHLY ?? 'price_monthly_placeholder',
-  annual: process.env.STRIPE_PRICE_ANNUAL ?? 'price_annual_placeholder',
-  fifa_exam: process.env.STRIPE_PRICE_FIFA_EXAM ?? 'price_fifa_placeholder',
-  investment_masterclass: process.env.STRIPE_PRICE_INVESTMENT ?? 'price_investment_placeholder',
-  advisory_session: process.env.STRIPE_PRICE_SESSION ?? 'price_session_placeholder',
-} as const;
+/**
+ * Server-only Stripe Price ID resolution. Do not import from Client Components.
+ */
 
-export type StripePriceId = (typeof STRIPE_PRICES)[keyof typeof STRIPE_PRICES];
+function requireStripePriceId(envVar: string, label: string): string {
+  const raw = process.env[envVar]?.trim();
+  if (!raw) {
+    throw new Error(`Missing ${envVar} for ${label}. Set it in the server environment.`);
+  }
+  if (raw.toLowerCase().includes('placeholder')) {
+    throw new Error(`Invalid ${envVar}: placeholder values are not allowed.`);
+  }
+  if (raw.startsWith('prod_')) {
+    throw new Error(`${label}: use a Stripe Price ID (price_…), not a Product ID (prod_…).`);
+  }
+  if (!raw.startsWith('price_')) {
+    throw new Error(`${label}: expected a Stripe Price ID starting with price_.`);
+  }
+  return raw;
+}
 
-/** Used by {@link createStripeCheckoutSession} for subscription plan keys. */
+const CHECKOUT_PLAN_ENV: Record<CheckoutPlanKey, { env: string; label: string }> = {
+  monthly: { env: 'STRIPE_PRICE_MONTHLY', label: 'monthly subscription' },
+  annual: { env: 'STRIPE_PRICE_ANNUAL', label: 'annual subscription' },
+  fifa_exam: { env: 'STRIPE_PRICE_FIFA_EXAM', label: 'FIFA exam prep' },
+  investment_masterclass: { env: 'STRIPE_PRICE_INVESTMENT', label: 'investment masterclass' },
+  advisory_session: { env: 'STRIPE_PRICE_SESSION', label: 'advisory session' },
+};
+
+/** Maps authenticated upgrade `planKey` → Stripe Price ID (server env). */
+export function getStripePriceIdForCheckoutPlan(planKey: CheckoutPlanKey): string {
+  const row = CHECKOUT_PLAN_ENV[planKey];
+  return requireStripePriceId(row.env, row.label);
+}
+
+/** Sign-up / post-registration subscription checkout (`subscription_monthly` | `subscription_annual`). */
 export function getSubscriptionPriceId(key: SubscriptionPlanKey): string {
-  const id =
-    key === 'subscription_monthly' ? STRIPE_PRICES.monthly : STRIPE_PRICES.annual;
-  if (!id || id.includes('placeholder')) {
-    throw new Error(
-      `Missing Stripe price ID for "${key}". Set STRIPE_PRICE_MONTHLY / STRIPE_PRICE_ANNUAL in .env.`,
-    );
+  if (key === 'subscription_monthly') {
+    return requireStripePriceId('STRIPE_PRICE_MONTHLY', 'subscription_monthly');
   }
-  const trimmed = id.trim();
-  if (trimmed.startsWith('prod_')) {
-    throw new Error(
-      `Stripe Checkout needs a Price ID (price_…), not a Product ID (prod_…).`,
-    );
-  }
-  if (!trimmed.startsWith('price_')) {
-    throw new Error(
-      `Invalid Stripe price ID for "${key}": expected a string starting with "price_".`,
-    );
-  }
-  return trimmed;
+  return requireStripePriceId('STRIPE_PRICE_ANNUAL', 'subscription_annual');
 }

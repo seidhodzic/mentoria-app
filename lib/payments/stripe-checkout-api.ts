@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { env } from '@/lib/env';
+import { isCheckoutPlanKey, checkoutModeForPlan } from '@/lib/payments/checkout-plan-keys';
+import { getStripePriceIdForCheckoutPlan } from '@/lib/payments/stripe-prices';
 import { getStripe } from '@/lib/payments/stripe-provider';
 import { createClient } from '@/lib/supabase/server';
 
@@ -41,8 +43,9 @@ export async function handleStripeCheckoutPost(req: NextRequest): Promise<NextRe
     }
 
     let body: {
+      planKey?: unknown;
+      /** @deprecated Rejected — use `planKey` only. */
       priceId?: unknown;
-      mode?: unknown;
       successUrl?: unknown;
       cancelUrl?: unknown;
     };
@@ -52,15 +55,33 @@ export async function handleStripeCheckoutPost(req: NextRequest): Promise<NextRe
       return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 });
     }
 
-    const priceId = typeof body.priceId === 'string' ? body.priceId.trim() : '';
-    if (!priceId.startsWith('price_')) {
+    if (body.priceId != null && String(body.priceId).trim() !== '') {
       return NextResponse.json(
-        { error: 'A valid Stripe Price ID is required (must start with price_)' },
+        { error: 'Do not send priceId from the client. Use planKey (e.g. monthly, annual, advisory_session).' },
         { status: 400 }
       );
     }
 
-    const mode = body.mode === 'payment' ? 'payment' : 'subscription';
+    const planKeyRaw = typeof body.planKey === 'string' ? body.planKey.trim() : '';
+    if (!planKeyRaw || !isCheckoutPlanKey(planKeyRaw)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid or missing planKey. Expected one of: monthly, annual, fifa_exam, investment_masterclass, advisory_session.',
+        },
+        { status: 400 }
+      );
+    }
+
+    let priceId: string;
+    try {
+      priceId = getStripePriceIdForCheckoutPlan(planKeyRaw);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Price configuration error';
+      return NextResponse.json({ error: msg }, { status: 503 });
+    }
+
+    const mode = checkoutModeForPlan(planKeyRaw);
     const base = env.siteUrl.replace(/\/$/, '');
 
     const successRaw =
@@ -108,7 +129,11 @@ export async function handleStripeCheckoutPost(req: NextRequest): Promise<NextRe
       }
     }
 
-    const metadata = { userId: user.id, supabase_user_id: user.id };
+    const metadata = {
+      userId: user.id,
+      supabase_user_id: user.id,
+      plan_key: planKeyRaw,
+    };
 
     const session = await stripe.checkout.sessions.create({
       mode,
