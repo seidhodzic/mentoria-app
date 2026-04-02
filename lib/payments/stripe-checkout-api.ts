@@ -6,8 +6,10 @@ import { getStripePriceIdForCheckoutPlan } from '@/lib/payments/stripe-prices';
 import { getStripe } from '@/lib/payments/stripe-provider';
 import { createClient } from '@/lib/supabase/server';
 
-const DEFAULT_SUCCESS_PATH = '/dashboard?success=true';
-const DEFAULT_CANCEL_PATH = '/pricing?canceled=true';
+/** Member home shows `searchParams.success` — see `app/user/page.tsx`. */
+const DEFAULT_SUCCESS_PATH = '/user?success=true';
+/** Authenticated checkout: return to upgrade/pricing hub with `canceled` banner — see `app/user/upgrade/page.tsx`. */
+const DEFAULT_CANCEL_PATH = '/user/upgrade?canceled=true';
 
 function absoluteUrl(base: string, pathOrUrl: string): string {
   const b = base.replace(/\/$/, '');
@@ -55,9 +57,14 @@ export async function handleStripeCheckoutPost(req: NextRequest): Promise<NextRe
       return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 });
     }
 
-    if (body.priceId != null && String(body.priceId).trim() !== '') {
+    const legacyPriceId =
+      body.priceId != null && String(body.priceId).trim() !== '';
+    if (legacyPriceId) {
       return NextResponse.json(
-        { error: 'Do not send priceId from the client. Use planKey (e.g. monthly, annual, advisory_session).' },
+        {
+          error:
+            'The field "priceId" is no longer accepted. Send "planKey" instead (e.g. "monthly", "annual", "fifa_exam"). Stripe Price IDs are resolved on the server only.',
+        },
         { status: 400 }
       );
     }
@@ -67,7 +74,7 @@ export async function handleStripeCheckoutPost(req: NextRequest): Promise<NextRe
       return NextResponse.json(
         {
           error:
-            'Invalid or missing planKey. Expected one of: monthly, annual, fifa_exam, investment_masterclass, advisory_session.',
+            'planKey is required. Use one of: monthly, annual, fifa_exam, investment_masterclass, advisory_session. (Client-sent Stripe price_… IDs are not supported.)',
         },
         { status: 400 }
       );

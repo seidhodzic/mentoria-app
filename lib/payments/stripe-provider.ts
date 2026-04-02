@@ -55,7 +55,7 @@ export async function createStripeCheckoutSession(input: CheckoutInput): Promise
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
-      success_url: `${base}/dashboard?success=true`,
+      success_url: `${base}/user?success=true`,
       cancel_url: `${base}/pricing?canceled=true`,
       metadata: {
         userId: input.userId,

@@ -9,7 +9,7 @@ export default async function CoursePage({ params }: { params: { id: string } })
 
   const { data: profileRow, error: profileErr } = await supabase
     .from('profiles')
-    .select('role, signup_access_type, status, is_active')
+    .select('role, signup_access_type, status, is_active, subscription_status')
     .eq('id', user.id)
     .single();
 

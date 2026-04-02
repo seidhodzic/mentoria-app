@@ -182,6 +182,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_active: boolean
+          position: string | null
           profile_type: string | null
           role: string
           signup_access_type: string | null
@@ -199,6 +200,7 @@ export type Database = {
           full_name?: string | null
           id: string
           is_active?: boolean
+          position?: string | null
           profile_type?: string | null
           role?: string
           signup_access_type?: string | null
@@ -216,6 +218,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_active?: boolean
+          position?: string | null
           profile_type?: string | null
           role?: string
           signup_access_type?: string | null
@@ -509,6 +512,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stripe_webhook_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {

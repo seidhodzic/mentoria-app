@@ -125,7 +125,7 @@ export async function middleware(request: NextRequest) {
     if (gated) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role, signup_access_type, status, is_active')
+        .select('role, signup_access_type, status, is_active, subscription_status')
         .eq('id', user.id)
         .single();
 

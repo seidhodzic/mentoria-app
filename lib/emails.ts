@@ -1,8 +1,9 @@
 import { Resend } from 'resend';
+import { getSiteUrl } from '@/lib/env';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = 'Mentoria <onboarding@resend.dev>';
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const BASE_URL = getSiteUrl();
 
 function supabasePublicStorageUrl(path: string): string {
   const base = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '');
