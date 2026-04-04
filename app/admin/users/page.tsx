@@ -1,7 +1,9 @@
 import AdminUsersClient from '@/features/admin-users/components/AdminUsersClient';
+import { buildAdminUserRows } from '@/lib/admin-user-display';
 import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
+import type { AdminSubscriptionSnapshot } from '@/features/admin-users/types';
 import { redirect } from 'next/navigation';
 
 export default async function AdminUsersPage() {
@@ -28,5 +30,32 @@ export default async function AdminUsersPage() {
 
   throwIfSupabaseError(usersError, 'users');
 
-  return <AdminUsersClient users={users ?? []} />;
+  const { data: subs, error: subsError } = await supabase
+    .from('subscriptions')
+    .select('user_id, plan, status, stripe_subscription_id, stripe_customer_id, current_period_end');
+
+  throwIfSupabaseError(subsError, 'subscriptions');
+
+  const map = new Map<string, AdminSubscriptionSnapshot>();
+  for (const row of subs ?? []) {
+    map.set(row.user_id, {
+      plan: row.plan,
+      status: row.status,
+      stripe_subscription_id: row.stripe_subscription_id,
+      stripe_customer_id: row.stripe_customer_id,
+      current_period_end: row.current_period_end,
+    });
+  }
+
+  const rows = buildAdminUserRows(users ?? [], map);
+
+  const userDeletionEnabled = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+  return (
+    <AdminUsersClient
+      users={rows}
+      currentAdminId={user.id}
+      userDeletionEnabled={userDeletionEnabled}
+    />
+  );
 }
