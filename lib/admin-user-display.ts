@@ -24,7 +24,7 @@ function labelForProfileAndSub(
   if (profile.signup_access_type === 'one_time' && profile.is_active === true) {
     return 'One-time purchase';
   }
-  if (memberHasPremiumAccess(profile, sub?.status ?? null)) {
+  if (memberHasPremiumAccess(profile, sub?.status ?? null, sub?.plan ?? null)) {
     return 'Active access';
   }
   return 'No premium access';
@@ -37,7 +37,7 @@ export function buildAdminUserRows(
   return profiles.map((p) => {
     const sub = subscriptionsByUserId.get(p.id) ?? null;
     const latestStatus = sub?.status ?? null;
-    const premiumAccess = memberHasPremiumAccess(p, latestStatus);
+    const premiumAccess = memberHasPremiumAccess(p, latestStatus, sub?.plan ?? null);
     return {
       ...p,
       subscription: sub,

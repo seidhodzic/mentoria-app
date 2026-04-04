@@ -161,6 +161,11 @@ export default function AuthForm() {
         return;
       }
 
+      if (!isRegister && typeof window !== 'undefined') {
+        const n = new URLSearchParams(window.location.search).get('next');
+        if (n) fd.set('next', n);
+      }
+
       const signInResult = await signInWithPasswordAction(fd);
       if (signInResult?.error) {
         throw new Error(signInResult.error);

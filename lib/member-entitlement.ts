@@ -4,6 +4,13 @@ function isStripePremiumStatus(raw: string | null | undefined): boolean {
   return s === 'active' || s === 'trialing';
 }
 
+/**
+ * Whether the member should see premium areas (courses, materials, sessions, AI APIs).
+ * Sources: staff roles; active/trialing Stripe row; admin-granted row (`plan === 'admin_grant'`);
+ * one-time purchase; profile mirrors when subscription row is missing/racy.
+ *
+ * @param latestSubPlan optional `subscriptions.plan` (e.g. `subscription`, `one_time`, `admin_grant`)
+ */
 export function memberHasPremiumAccess(
   profile: {
     role?: string | null;
@@ -12,11 +19,18 @@ export function memberHasPremiumAccess(
     is_active?: boolean | null;
     subscription_status?: string | null;
   } | null,
-  latestSubStatus: string | null
+  latestSubStatus: string | null,
+  latestSubPlan?: string | null
 ): boolean {
   if (!profile) return false;
   if (profile.role === 'admin' || profile.role === 'mentor') return true;
   if (profile.status === 'suspended') return false;
+
+  /** Admin-granted premium row (see `adminGrantPremiumAction`). */
+  if (latestSubPlan === 'admin_grant' && isStripePremiumStatus(latestSubStatus)) {
+    return true;
+  }
+
   if (isStripePremiumStatus(latestSubStatus)) return true;
   /**
    * Webhook mirrors Stripe on `profiles.subscription_status`. If the subscriptions row is missing

@@ -53,21 +53,19 @@ export async function requirePremiumForApi(): Promise<
   if (base.unauthorized) return base;
   const { supabase, user } = base;
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, signup_access_type, status, is_active, subscription_status')
-    .eq('id', user.id)
-    .single();
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
 
   const { data: subRows } = await supabase
     .from('subscriptions')
-    .select('status')
+    .select('status, plan')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1);
 
-  const latestSub = subRows?.[0]?.status ?? null;
-  if (!memberHasPremiumAccess(profile, latestSub)) {
+  const sub = subRows?.[0];
+  const latestSub = sub?.status ?? null;
+  const latestPlan = sub?.plan ?? null;
+  if (!memberHasPremiumAccess(profile, latestSub, latestPlan)) {
     return {
       supabase: null,
       user: null,

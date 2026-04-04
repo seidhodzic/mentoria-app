@@ -9,7 +9,7 @@ export default async function CoursePage({ params }: { params: { id: string } })
 
   const { data: profileRow, error: profileErr } = await supabase
     .from('profiles')
-    .select('role, signup_access_type, status, is_active, subscription_status')
+    .select('*')
     .eq('id', user.id)
     .single();
 
@@ -42,14 +42,19 @@ export default async function CoursePage({ params }: { params: { id: string } })
 
   const { data: subRows, error: subError } = await supabase
     .from('subscriptions')
-    .select('status')
+    .select('status, plan')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1);
 
   throwIfSupabaseError(subError, 'subscriptions');
 
-  const subscriptionActive = memberHasPremiumAccess(profileRow, subRows?.[0]?.status ?? null);
+  const sub = subRows?.[0];
+  const subscriptionActive = memberHasPremiumAccess(
+    profileRow,
+    sub?.status ?? null,
+    sub?.plan ?? null
+  );
 
   return (
     <CoursePlayer

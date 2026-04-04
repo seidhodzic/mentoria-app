@@ -19,6 +19,14 @@ import { createClient, createLoginClient } from '@/lib/supabase/server';
 /** Reject auth.users rows older than this when verifying signup notifications. */
 const SIGNUP_MAX_AGE_MS = 2 * 60 * 60 * 1000;
 
+function safeInternalPath(raw: string | null | undefined): string | null {
+  if (raw == null || typeof raw !== 'string') return null;
+  const t = raw.trim();
+  if (!t.startsWith('/') || t.startsWith('//')) return null;
+  if (t.includes('..')) return null;
+  return t;
+}
+
 /**
  * Email/password sign-in on the server so session cookies are written via `setAll`
  * (avoids client-only storage that middleware cannot see).
@@ -63,7 +71,9 @@ export async function signInWithPasswordAction(
   }
 
   revalidatePath('/', 'layout');
-  redirect('/dashboard');
+  const nextRaw = String(formData.get('next') ?? '').trim();
+  const nextPath = safeInternalPath(nextRaw);
+  redirect(nextPath ?? '/dashboard');
 }
 
 /**

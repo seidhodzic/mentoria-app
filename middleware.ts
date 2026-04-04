@@ -67,10 +67,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!user) {
-    // Do not call signOut() here: it runs on every unauthenticated hit to /user etc. and can race
-    // with the first request after login before cookies attach, clearing the new session.
-    // Stale/invalid JWTs are dropped naturally on redirect; use login page sign-in to reset cookies.
-    return redirectWithSessionCookies(request, response, '/');
+    // Send to sign-in with return path — avoids dumping people on marketing home with no way back.
+    const next = `${pathname}${request.nextUrl.search ?? ''}`;
+    const login = new URL('/login', request.url);
+    login.searchParams.set('next', next);
+    return redirectWithSessionCookies(request, response, `${login.pathname}${login.search}`);
   }
 
   /** Router hub: avoid RSC-only redirect loops / repeated fetches — send users straight to their home. */
@@ -123,22 +124,20 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/user/materials') ||
       pathname.startsWith('/user/sessions');
     if (gated) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role, signup_access_type, status, is_active, subscription_status')
-        .eq('id', user.id)
-        .single();
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
 
       const { data: subRows } = await supabase
         .from('subscriptions')
-        .select('status')
+        .select('status, plan')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1);
 
-      const latestSub = subRows?.[0]?.status ?? null;
-      if (!memberHasPremiumAccess(profile, latestSub)) {
-        return redirectWithSessionCookies(request, response, '/pricing?locked=1');
+      const sub = subRows?.[0];
+      const latestSub = sub?.status ?? null;
+      const latestPlan = sub?.plan ?? null;
+      if (!memberHasPremiumAccess(profile, latestSub, latestPlan)) {
+        return redirectWithSessionCookies(request, response, '/user/upgrade?locked=1');
       }
     }
   }

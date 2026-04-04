@@ -38,13 +38,15 @@ export default async function UpgradePage({
 
   const { data: subRows } = await supabase
     .from('subscriptions')
-    .select('status')
+    .select('status, plan')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1);
 
-  const latestSub = subRows?.[0]?.status ?? null;
-  const hasPremium = memberHasPremiumAccess(profile, latestSub);
+  const sub = subRows?.[0];
+  const latestSub = sub?.status ?? null;
+  const latestPlan = sub?.plan ?? null;
+  const hasPremium = memberHasPremiumAccess(profile, latestSub, latestPlan);
 
   const lockedRaw = firstParam(searchParams.locked);
   const lockedParam = lockedRaw === '1' || lockedRaw === 'true';
