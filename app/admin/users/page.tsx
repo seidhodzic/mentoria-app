@@ -4,6 +4,7 @@ import { getDashboardPath, normalizeRole } from '@/lib/role';
 import { requireUser } from '@/lib/server/auth';
 import { throwIfSupabaseError } from '@/lib/server/supabase-query';
 import type { AdminSubscriptionSnapshot } from '@/features/admin-users/types';
+import type { Tables } from '@/types/supabase';
 import { redirect } from 'next/navigation';
 
 export default async function AdminUsersPage() {
@@ -24,7 +25,7 @@ export default async function AdminUsersPage() {
   const { data: users, error: usersError } = await supabase
     .from('profiles')
     .select(
-      'id, email, full_name, role, status, profile_type, position, signup_access_type, signup_plan_key, is_active, stripe_customer_id, stripe_price_id, subscription_status, subscription_current_period_end, created_at, updated_at'
+      'id, email, full_name, role, status, profile_type, signup_access_type, signup_plan_key, is_active, stripe_customer_id, stripe_price_id, subscription_status, subscription_current_period_end, created_at, updated_at'
     )
     .order('created_at', { ascending: false });
 
@@ -47,7 +48,8 @@ export default async function AdminUsersPage() {
     });
   }
 
-  const rows = buildAdminUserRows(users ?? [], map);
+  // Cast: omit optional columns (e.g. `position`) when DB schema lags generated types.
+  const rows = buildAdminUserRows((users ?? []) as Tables<'profiles'>[], map);
 
   const userDeletionEnabled = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
