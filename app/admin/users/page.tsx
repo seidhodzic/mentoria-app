@@ -22,18 +22,16 @@ export default async function AdminUsersPage() {
     redirect(getDashboardPath(normalizeRole(profile?.role)));
   }
 
+  // Use `*` so PostgREST returns whatever columns exist in the remote DB. A fixed column list
+  // breaks production when migrations lag behind generated types (unknown column → 400 → throw).
   const { data: users, error: usersError } = await supabase
     .from('profiles')
-    .select(
-      'id, email, full_name, role, status, profile_type, signup_access_type, signup_plan_key, is_active, stripe_customer_id, stripe_price_id, subscription_status, subscription_current_period_end, created_at, updated_at'
-    )
+    .select('*')
     .order('created_at', { ascending: false });
 
   throwIfSupabaseError(usersError, 'users');
 
-  const { data: subs, error: subsError } = await supabase
-    .from('subscriptions')
-    .select('user_id, plan, status, stripe_subscription_id, stripe_customer_id, current_period_end');
+  const { data: subs, error: subsError } = await supabase.from('subscriptions').select('*');
 
   throwIfSupabaseError(subsError, 'subscriptions');
 
