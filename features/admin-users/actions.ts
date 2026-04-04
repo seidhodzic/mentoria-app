@@ -108,9 +108,10 @@ export async function adminGrantPremiumAction(input: {
   const { supabase } = gate;
   const { targetUserId } = input;
 
+  // Do not select/upsert `stripe_price_id` here — older DBs may not have that column yet (006 migration).
   const { data: sub, error: subErr } = await supabase
     .from('subscriptions')
-    .select('plan, status, stripe_subscription_id, stripe_customer_id, stripe_price_id')
+    .select('plan, status, stripe_subscription_id, stripe_customer_id')
     .eq('user_id', targetUserId)
     .maybeSingle();
 
@@ -141,7 +142,6 @@ export async function adminGrantPremiumAction(input: {
       status: 'active',
       stripe_subscription_id: null,
       stripe_customer_id: sub?.stripe_customer_id ?? null,
-      stripe_price_id: sub?.stripe_price_id ?? null,
       current_period_end: periodEnd,
     },
     { onConflict: 'user_id' }
