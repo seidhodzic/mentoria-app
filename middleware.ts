@@ -115,11 +115,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  /** Member-only premium areas: paid subscription (`active`) or one-time active purchase; overview `/user` stays open. */
+  /** Member-only premium areas: paid subscription (`active`) or one-time active purchase; overview `/user` stays open.
+   *  `/user/quizzes` is not gated here so members can open the hub; quiz generation API enforces premium. */
   if (pathname.startsWith('/user')) {
     const gated =
       pathname.startsWith('/user/courses') ||
-      pathname.startsWith('/user/quizzes') ||
       pathname.startsWith('/user/materials') ||
       pathname.startsWith('/user/sessions');
     if (gated) {

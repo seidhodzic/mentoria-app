@@ -25,12 +25,15 @@ export default async function UpgradePage({
 
   const { data: profile, error: profileErr } = await supabase
     .from('profiles')
-    .select('role, signup_access_type, status, is_active, subscription_status')
+    .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  if (profileErr || !profile) {
-    redirect('/login');
+  if (profileErr) {
+    redirect('/user');
+  }
+  if (!profile) {
+    redirect('/user');
   }
 
   const { data: subRows } = await supabase
